@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -58,6 +59,12 @@ public partial class MainWindowViewModel : ViewModelBase
     [ObservableProperty] public partial string InputFilePath { get; set; } = "";
     [ObservableProperty] public partial AssStyleOptions? SelectedItem { get; set; } = null;
     [ObservableProperty] public partial int SelectedIndex { get; set; } = -1;
+
+    partial void OnSelectedItemChanged(AssStyleOptions? value)
+    {
+        _ = value;
+        UpdateStylePreview();
+    }
     
     [ObservableProperty] public partial bool IsGlowChecked { get; set; } = false;
     [ObservableProperty] public partial bool IsBevelChecked { get; set; } = false;
@@ -65,6 +72,7 @@ public partial class MainWindowViewModel : ViewModelBase
     [ObservableProperty] public partial bool IsHardShadowChecked { get; set; } = false;
     [ObservableProperty] public partial bool IsUseForKaraokeChecked { get; set; } = false;
     [ObservableProperty] public partial bool IsHighlightForCurrentWordChecked { get; set; } = false;
+    [ObservableProperty] public partial string PreviewHtml { get; set; } = "";
 
     [RelayCommand]
     private void ToggleStyleOptions()
@@ -244,6 +252,7 @@ public partial class MainWindowViewModel : ViewModelBase
         _defaultStyle = null;
         InputFilePath = "";
         DataSource = [];
+        UpdateStylePreview();
         IsStyleOptionsAvailable = false;
         IsAutoConvertActive = false;
         IsAutoConvertAvailable = false;
@@ -255,7 +264,22 @@ public partial class MainWindowViewModel : ViewModelBase
         AssStyleOptionsList.SaveToFile(
             _styleOptions.Where(p => !_builtInStyleNames.Contains(p.Key))
                 .Select(p => p.Value)
-        ); }
+        ); 
+    }
+
+    private void UpdateStylePreview()
+    {
+        if(SelectedItem is null)
+        {
+            PreviewHtml = "";
+            return;
+        }
+        
+        var style = _styles[SelectedItem.Name];
+        var html = HtmlStylePreviewGenerator.Generate(style, SelectedItem, _defaultStyle, 2);
+        
+        PreviewHtml = "data:text/html;base64," + System.Convert.ToBase64String(Encoding.UTF8.GetBytes(html));
+    }
 }
 
 internal sealed class NoOpFileDialogService : IFileDialogService

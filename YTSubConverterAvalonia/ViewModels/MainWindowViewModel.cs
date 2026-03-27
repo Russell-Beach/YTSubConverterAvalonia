@@ -47,7 +47,7 @@ public partial class MainWindowViewModel : ViewModelBase
         // Constructor for use in the IDE previewer since it doesn't have a file dialog service
     }
 
-    [ObservableProperty] public partial ObservableList<string> DataSource { get; set; } = [];
+    [ObservableProperty] public partial ObservableList<AssStyleOptions> DataSource { get; set; } = [];
     [ObservableProperty] public partial bool IsStyleOptionsVisible { get; set; } = false;
     [ObservableProperty] public partial bool IsConvertAvailable { get; set; } = false;
     [ObservableProperty] public partial bool IsAutoConvertAvailable { get; set; } = false;
@@ -56,9 +56,15 @@ public partial class MainWindowViewModel : ViewModelBase
     [ObservableProperty] public partial bool ConvertTextVisibility { get; set; } = false;
     [ObservableProperty] public partial string ConvertedTextMessage { get; set; } = "";
     [ObservableProperty] public partial string InputFilePath { get; set; } = "";
-    [ObservableProperty] public partial string? SelectedItem { get; set; } = null;
+    [ObservableProperty] public partial AssStyleOptions? SelectedItem { get; set; } = null;
     [ObservableProperty] public partial int SelectedIndex { get; set; } = -1;
-
+    
+    [ObservableProperty] public partial bool IsGlowChecked { get; set; } = false;
+    [ObservableProperty] public partial bool IsBevelChecked { get; set; } = false;
+    [ObservableProperty] public partial bool IsSoftShadowChecked { get; set; } = false;
+    [ObservableProperty] public partial bool IsHardShadowChecked { get; set; } = false;
+    [ObservableProperty] public partial bool IsUseForKaraokeChecked { get; set; } = false;
+    [ObservableProperty] public partial bool IsHighlightForCurrentWordChecked { get; set; } = false;
 
     [RelayCommand]
     private void ToggleStyleOptions()
@@ -225,9 +231,9 @@ public partial class MainWindowViewModel : ViewModelBase
             _styleOptions.Add(style.Key, new AssStyleOptions(style.Value));
         
         // this looks butt ugly and there has to be a better way for this to work
-        DataSource = new ObservableList<string>(assDoc.Styles.Select(s => s.Name).ToList());
+        DataSource = new ObservableList<AssStyleOptions>(assDoc.Styles.Select(s => _styleOptions[s.Name]));
 
-        var styleIndex = assDoc.Styles.IndexOf(s => s.Name == SelectedItem);
+        var styleIndex = assDoc.Styles.IndexOf(s => s.Name == SelectedItem?.Name);
         SelectedIndex = styleIndex >= 0 ? styleIndex : 0; 
         // no need to update SelectedItem it auto follows. Causes some janky behavior if you manually make them follow
     }

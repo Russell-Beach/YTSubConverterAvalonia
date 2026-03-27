@@ -52,18 +52,18 @@
                 <Grid ColumnDefinitions="Auto,Auto" ColumnSpacing="34">
                     <StackPanel Spacing="8">
                         <TextBlock Text="Shadow types:" Margin="0,0,0,2" />
-                        <CheckBox Content="Glow" />
-                        <CheckBox Content="Bevel" />
-                        <CheckBox Content="Soft shadow" />
-                        <CheckBox Content="Hard shadow" />
+                        <CheckBox Content="Glow" IsChecked="{Binding IsGlowChecked}"/>
+                        <CheckBox Content="Bevel" IsChecked="{Binding IsBevelChecked}" />
+                        <CheckBox Content="Soft shadow" IsChecked="{Binding IsSoftShadowChecked}" />
+                        <CheckBox Content="Hard shadow" IsChecked="{Binding IsHardShadowChecked}" />
                     </StackPanel>
 
                     <StackPanel Grid.Column="1" Spacing="8">
-                        <CheckBox Content="Use for karaoke" />
-                        <CheckBox Content="Highlight current word" />
+                        <CheckBox Content="Use for karaoke" IsChecked="{Binding IsUseForKaraokeChecked}" />
+                        <CheckBox Content="Highlight current word" IsChecked="{Binding IsHighlightForCurrentWordChecked}" IsEnabled="{Binding IsUseForKaraokeChecked}" />
 
                         <!-- there's no masked textbox for hexadecimal input in Avalonia, so I use a normal textbox with a watermark and hope the user has a brain. (very big assumption) -->
-                        <Grid ColumnDefinitions="Auto, 80 ,Auto" RowDefinitions="Auto, Auto,Auto" ColumnSpacing="6" RowSpacing="4">
+                        <Grid ColumnDefinitions="Auto, 80 ,Auto" RowDefinitions="Auto, Auto,Auto" ColumnSpacing="6" RowSpacing="4" IsEnabled="{Binding IsHighlightForCurrentWordChecked}">
                             <TextBlock Grid.Row="0" Grid.Column="0" Text="Text color:" VerticalAlignment="Center" />
                             <TextBox Grid.Row="0" Grid.Column="1" VerticalContentAlignment="Center" Watermark="#RRGGBB" />
                             <ColorPicker Grid.Row="0" Grid.Column="2" IsAlphaEnabled="False" />

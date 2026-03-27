@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using Avalonia.Controls;
@@ -32,5 +33,11 @@ public partial class MainWindow : Window
     private void Drop(object? sender, DragEventArgs e)
     {
         if (DataContext is MainWindowViewModel mainWindow) mainWindow.LoadFile(e.Data.GetFileNames().ToList()[0]);
+    }
+
+    protected override void OnClosing(WindowClosingEventArgs e)
+    {
+        if(DataContext is MainWindowViewModel mainWindow) mainWindow.SaveStylesOnClose();
+        base.OnClosing(e);
     }
 }

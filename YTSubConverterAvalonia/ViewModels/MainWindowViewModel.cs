@@ -83,7 +83,7 @@ public partial class MainWindowViewModel : ViewModelBase
             {
                 case ".ass":
                 {
-                    var inputDoc = new AssDocument(InputFilePath); //TODO: Add styles from listbox here
+                    var inputDoc = new AssDocument(InputFilePath, _styleOptions.Values.ToList());
                     outputDoc = new YttDocument(inputDoc);
                     outputExtension = ".ytt";
                     
@@ -243,6 +243,13 @@ public partial class MainWindowViewModel : ViewModelBase
         IsAutoConvertAvailable = false;
         IsConvertAvailable = false;
     }
+
+    public void SaveStylesOnClose()
+    {
+        AssStyleOptionsList.SaveToFile(
+            _styleOptions.Where(p => !_builtInStyleNames.Contains(p.Key))
+                .Select(p => p.Value)
+        ); }
 }
 
 internal sealed class NoOpFileDialogService : IFileDialogService

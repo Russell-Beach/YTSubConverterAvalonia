@@ -9,6 +9,18 @@
         x:DataType="vm:MainWindowViewModel"
         Icon="/Assets/avalonia-logo.ico"
         Title="YTSubConverter Avalonia">
+        <Window.Resources>
+            <ResourceDictionary>
+                <ResourceDictionary.ThemeDictionaries>
+                    <ResourceDictionary x:Key="Light">
+                        <Color x:Key="BackgroundColor">White</Color>
+                    </ResourceDictionary>
+                    <ResourceDictionary x:Key="Dark">
+                        <Color x:Key="BackgroundColor">#282828</Color>
+                    </ResourceDictionary>
+                </ResourceDictionary.ThemeDictionaries>
+            </ResourceDictionary>
+        </Window.Resources>
 
     <Design.DataContext>
         <!-- This only sets the DataContext for the previewer in an IDE, to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
@@ -18,7 +30,7 @@
     
     <!-- For some incredibly unfunny reason, you CANNOT drop an item into a grid's background unless it has a background color assigned! 
          Now I have to take the extra 9 yards to consider if the user's theme is light or dark instead of letting Avalonia do its job!!! -->
-    <Grid RowDefinitions="Auto,Auto,*,Auto" Margin="8" RowSpacing="10" DragDrop.AllowDrop="True" Background="#282828">
+    <Grid RowDefinitions="Auto,Auto,*,Auto" Margin="8" RowSpacing="10" DragDrop.AllowDrop="True" Background="{DynamicResource BackgroundColor}">
         <Grid Grid.Row="0" ColumnDefinitions="*,Auto" ColumnSpacing="8">
             <TextBox Watermark="Drag and drop .ass/.sbv file or click the select file button" Text="{Binding InputFilePath, Mode=TwoWay}" IsReadOnly="True"/>
             <Button Grid.Column="1" Content="Select File" Command="{Binding LoadSubtitleButtonCommand}" />
@@ -70,7 +82,7 @@
                 <Border Grid.Row="1"
                         BorderBrush="#9E9E9E"
                         BorderThickness="1"
-                        Background="#FF505050">
+                        Background="{DynamicResource BackgroundColor}">
                 </Border>
             </Grid>
         </Grid>

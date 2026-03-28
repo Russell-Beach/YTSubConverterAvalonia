@@ -64,7 +64,6 @@ public partial class MainWindowViewModel : ViewModelBase
     {
         if (value is null)
         {
-            PreviewHtml = "";
             return;
         }
         
@@ -150,6 +149,18 @@ public partial class MainWindowViewModel : ViewModelBase
         SelectedItem?.IsKaraoke = value;
         IsHighlightForCurrentWordChecked = false;
         UpdateStylePreview();
+    }
+
+    partial void OnIsHighlightForCurrentWordCheckedChanged(bool value)
+    {
+        if (SelectedItem is null)
+        {
+            return;
+        }
+        
+        var style = _styles[SelectedItem.Name];
+        
+        // TODO: check how it's done in MainForm.cs
     }
     
     

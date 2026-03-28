@@ -79,7 +79,7 @@
                         </Grid>
                     </StackPanel>
                 </Grid>
-                <Border Grid.Row= "1" BorderBrush="#9E9E9E" BorderThickness="1" Background="Transparent">
+                <Border Grid.Row= "1" BorderBrush="#9E9E9E" BorderThickness="1">
                     <webViewControl:WebView Address="{Binding PreviewHtml}"/>
                 </Border>
                 

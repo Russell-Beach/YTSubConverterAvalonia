@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -121,6 +120,39 @@ public partial class MainWindowViewModel : ViewModelBase
     [ObservableProperty] public partial string CurrentWordShadowColor { get; set; } = "";
     [ObservableProperty] public partial bool IsCurrentWordShadowColorEnabled { get; set; } = false;
     [ObservableProperty] public partial string PreviewHtml { get; set; } = "";
+
+    partial void OnIsGlowCheckedChanged(bool value)
+    {
+        SelectedItem?.SetShadowTypeEnabled(ShadowType.Glow, value);
+        UpdateStylePreview();
+    }
+
+    partial void OnIsBevelCheckedChanged(bool value)
+    {
+        SelectedItem?.SetShadowTypeEnabled(ShadowType.Bevel, value);
+        UpdateStylePreview();
+    }
+
+    partial void OnIsSoftShadowCheckedChanged(bool value)
+    {
+        SelectedItem?.SetShadowTypeEnabled(ShadowType.SoftShadow, value);
+        UpdateStylePreview();
+    }
+
+    partial void OnIsHardShadowCheckedChanged(bool value)
+    {
+        SelectedItem?.SetShadowTypeEnabled(ShadowType.HardShadow,  value); 
+        UpdateStylePreview();
+    }
+    
+    partial void OnIsUseForKaraokeCheckedChanged(bool value)
+    {
+        SelectedItem?.IsKaraoke = value;
+        IsHighlightForCurrentWordChecked = false;
+        UpdateStylePreview();
+    }
+    
+    
 
     [RelayCommand]
     private void ToggleStyleOptions()

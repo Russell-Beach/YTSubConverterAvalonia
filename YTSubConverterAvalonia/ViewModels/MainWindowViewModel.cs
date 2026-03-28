@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -62,16 +63,63 @@ public partial class MainWindowViewModel : ViewModelBase
 
     partial void OnSelectedItemChanged(AssStyleOptions? value)
     {
-        _ = value;
+        if (value is null)
+        {
+            PreviewHtml = "";
+            return;
+        }
+        
+        var style = _styles[value.Name];
+        IsShadowsEnabled = style.HasShadow;
+
+        if (style is { HasOutline: true, HasOutlineBox: false })
+        {
+            IsGlowChecked = true;
+            IsGlowEnabled = false;
+        }
+        else
+        {
+            IsGlowChecked = style.HasShadow && value.ShadowTypes.Contains(ShadowType.Glow);
+        }
+        
+        IsBevelChecked = style.HasShadow && value.ShadowTypes.Contains(ShadowType.Bevel);
+        IsSoftShadowChecked = style.HasShadow && value.ShadowTypes.Contains(ShadowType.SoftShadow);
+        IsHardShadowChecked = style.HasShadow && value.ShadowTypes.Contains(ShadowType.HardShadow);
+        
+        var currentWordTextColor = value.CurrentWordTextColor;
+        var currentWordOutlineColor = value.CurrentWordOutlineColor;
+        var currentWordShadowColor = value.CurrentWordShadowColor;
+
+        IsUseForKaraokeChecked = value.IsKaraoke;
+        IsHighlightForCurrentWordChecked = value.IsKaraoke && !currentWordTextColor.IsEmpty;
+        
+        IsCurrentWordTextColorEnabled = IsHighlightForCurrentWordChecked;
+        CurrentWordTextColor = IsCurrentWordTextColorEnabled ? ColorUtil.ToHtml(currentWordTextColor) : "";
+        
+        IsCurrentWordOutlineColorEnabled = IsHighlightForCurrentWordChecked && style is { HasOutline: true, HasOutlineBox: false };
+        CurrentWordOutlineColor = IsCurrentWordOutlineColorEnabled ? ColorUtil.ToHtml(currentWordOutlineColor) : "";
+        
+        IsCurrentWordShadowColorEnabled = IsHighlightForCurrentWordChecked && style.HasShadow;
+        CurrentWordShadowColor = IsCurrentWordShadowColorEnabled ? ColorUtil.ToHtml(currentWordShadowColor) : "";
+        
+        
         UpdateStylePreview();
     }
     
     [ObservableProperty] public partial bool IsGlowChecked { get; set; } = false;
+    [ObservableProperty] public partial bool IsGlowEnabled { get; set; } = false;
+    [ObservableProperty] public partial bool IsShadowsEnabled { get; set; } = false;
     [ObservableProperty] public partial bool IsBevelChecked { get; set; } = false;
     [ObservableProperty] public partial bool IsSoftShadowChecked { get; set; } = false;
     [ObservableProperty] public partial bool IsHardShadowChecked { get; set; } = false;
     [ObservableProperty] public partial bool IsUseForKaraokeChecked { get; set; } = false;
     [ObservableProperty] public partial bool IsHighlightForCurrentWordChecked { get; set; } = false;
+    [ObservableProperty] public partial string CurrentWordTextColor { get; set; } = "";
+    [ObservableProperty] public partial bool IsCurrentWordTextColorEnabled { get; set; } = false;
+    [ObservableProperty] public partial string CurrentWordOutlineColor { get; set; } = "";
+    [ObservableProperty] public partial bool IsCurrentWordOutlineColorEnabled { get; set; } = false;
+    [ObservableProperty] public partial string CurrentWordShadowColor { get; set; } = "";
+    [ObservableProperty] public partial bool IsCurrentWordShadowColorEnabled { get; set; } = false;
     [ObservableProperty] public partial string PreviewHtml { get; set; } = "";
 
     [RelayCommand]

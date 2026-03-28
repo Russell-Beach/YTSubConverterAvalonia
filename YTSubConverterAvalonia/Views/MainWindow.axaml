@@ -53,10 +53,10 @@
                 <Grid ColumnDefinitions="Auto,Auto" ColumnSpacing="34">
                     <StackPanel Spacing="8">
                         <TextBlock Text="Shadow types:" Margin="0,0,0,2" />
-                        <CheckBox Content="Glow" IsChecked="{Binding IsGlowChecked}"/>
-                        <CheckBox Content="Bevel" IsChecked="{Binding IsBevelChecked}" />
-                        <CheckBox Content="Soft shadow" IsChecked="{Binding IsSoftShadowChecked}" />
-                        <CheckBox Content="Hard shadow" IsChecked="{Binding IsHardShadowChecked}" />
+                        <CheckBox Content="Glow" IsEnabled="{Binding IsGlowEnabled}" IsChecked="{Binding IsGlowChecked}"/>
+                        <CheckBox Content="Bevel" IsEnabled="{Binding IsShadowsEnabled}" IsChecked="{Binding IsBevelChecked}" />
+                        <CheckBox Content="Soft shadow" IsEnabled="{Binding IsShadowsEnabled}" IsChecked="{Binding IsSoftShadowChecked}" />
+                        <CheckBox Content="Hard shadow" IsEnabled="{Binding IsShadowsEnabled}" IsChecked="{Binding IsHardShadowChecked}" />
                     </StackPanel>
 
                     <StackPanel Grid.Column="1" Spacing="8">
@@ -66,16 +66,16 @@
                         <!-- there's no masked textbox for hexadecimal input in Avalonia, so I use a normal textbox with a watermark and hope the user has a brain. (very big assumption) -->
                         <Grid ColumnDefinitions="Auto, 80 ,Auto" RowDefinitions="Auto, Auto,Auto" ColumnSpacing="6" RowSpacing="4" IsEnabled="{Binding IsHighlightForCurrentWordChecked}">
                             <TextBlock Grid.Row="0" Grid.Column="0" Text="Text color:" VerticalAlignment="Center" />
-                            <TextBox Grid.Row="0" Grid.Column="1" VerticalContentAlignment="Center" Watermark="#RRGGBB" />
-                            <ColorPicker Grid.Row="0" Grid.Column="2" IsAlphaEnabled="False" />
+                            <TextBox Grid.Row="0" Grid.Column="1" VerticalContentAlignment="Center" Watermark="#RRGGBB" IsEnabled="{Binding IsCurrentWordTextColorEnabled}" Text="{Binding CurrentWordTextColor}"/>
+                            <ColorPicker Grid.Row="0" Grid.Column="2" IsAlphaEnabled="False" Color="{Binding CurrentWordTextColor}" IsEnabled="{Binding IsCurrentWordTextColorEnabled}"/>
 
                             <TextBlock Grid.Row="1" Grid.Column="0" Text="Outline color:" VerticalAlignment="Center" />
-                            <TextBox Grid.Row="1" Grid.Column="1" VerticalContentAlignment="Center" Watermark="#RRGGBB" />
-                            <ColorPicker Grid.Row="1" Grid.Column="2" IsAlphaEnabled="False" />
+                            <TextBox Grid.Row="1" Grid.Column="1" VerticalContentAlignment="Center" Watermark="#RRGGBB" IsEnabled="{Binding IsCurrentWordOutlineColorEnabled}" Text="{Binding CurrentWordOutlineColor}"/>
+                            <ColorPicker Grid.Row="1" Grid.Column="2" IsAlphaEnabled="False" Color="{Binding CurrentWordOutlineColor}" IsEnabled="{Binding IsCurrentWordOutlineColorEnabled}"/>
 
                             <TextBlock Grid.Row="2" Grid.Column="0" Text="Shadow color:" VerticalAlignment="Center" />
-                            <TextBox Grid.Row="2" Grid.Column="1" VerticalContentAlignment="Center" Watermark="#RRGGBB" />
-                            <ColorPicker Grid.Row="2" Grid.Column="2" IsAlphaEnabled="False" />
+                            <TextBox Grid.Row="2" Grid.Column="1" VerticalContentAlignment="Center" Watermark="#RRGGBB" IsEnabled="{Binding IsCurrentWordShadowColorEnabled}" Text="{Binding CurrentWordShadowColor}"/>
+                            <ColorPicker Grid.Row="2" Grid.Column="2" IsAlphaEnabled="False" Color="{Binding CurrentWordShadowColor}" IsEnabled="{Binding IsCurrentWordShadowColorEnabled}"/>
                         </Grid>
                     </StackPanel>
                 </Grid>

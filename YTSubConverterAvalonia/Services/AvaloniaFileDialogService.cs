@@ -22,13 +22,9 @@ public sealed class AvaloniaFileDialogService(Window ownerWindow) : IFileDialogS
         });
 
         var selectedFile = files.FirstOrDefault();
-        if (selectedFile is null)
-        {
-            return null;
-        }
+        if (selectedFile is null) return null;
 
         var filePath = selectedFile.TryGetLocalPath();
         return string.IsNullOrWhiteSpace(filePath) ? null : filePath;
     }
 }
-

@@ -6,4 +6,3 @@ public interface IFileDialogService
 {
     Task<string?> PickSingleFileAsync();
 }
-

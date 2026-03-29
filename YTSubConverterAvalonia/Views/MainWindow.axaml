@@ -25,64 +25,86 @@
 
     <Design.DataContext>
         <!-- This only sets the DataContext for the previewer in an IDE, to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
-        <vm:MainWindowViewModel/>
+        <vm:MainWindowViewModel />
     </Design.DataContext>
 
-    
+
     <!-- For some incredibly unfunny reason, you CANNOT drop an item into a grid's background unless it has a background color assigned! 
          Now I have to take the extra 9 yards to consider if the user's theme is light or dark instead of letting Avalonia do its job!!! -->
-    <Grid RowDefinitions="Auto,Auto,*,Auto" Margin="8" RowSpacing="10" DragDrop.AllowDrop="True" Background="{DynamicResource BackgroundColor}">
+    <Grid RowDefinitions="Auto,Auto,*,Auto" Margin="8" RowSpacing="10" DragDrop.AllowDrop="True"
+          Background="{DynamicResource BackgroundColor}">
         <Grid Grid.Row="0" ColumnDefinitions="*,Auto" ColumnSpacing="8">
-            <TextBox Watermark="Drag and drop .ass/.sbv file or click the select file button" Text="{Binding InputFilePath, Mode=TwoWay}" IsReadOnly="True"/>
+            <TextBox Watermark="Drag and drop .ass/.sbv file or click the select file button"
+                     Text="{Binding InputFilePath, Mode=TwoWay}" IsReadOnly="True" />
             <Button Grid.Column="1" Content="Select File" Command="{Binding LoadSubtitleButtonCommand}" />
         </Grid>
 
         <ToggleButton Grid.Row="1"
-                Content="Style Options"
-                HorizontalAlignment="Left"
-                Command="{Binding ToggleStyleOptionsCommand}" />
+                      Content="Style Options"
+                      HorizontalAlignment="Left"
+                      Command="{Binding ToggleStyleOptionsCommand}"
+                      IsEnabled="{Binding IsStyleOptionsAvailable}" />
 
         <Grid Grid.Row="2"
               ColumnDefinitions="250,*"
               ColumnSpacing="8"
-              IsVisible="{Binding IsStyleOptionsVisible}"
-              IsEnabled="{Binding IsStyleOptionsAvailable}">
-            <ListBox BorderBrush="#9E9E9E" BorderThickness="1" ItemsSource="{Binding DataSource}" SelectedItem="{Binding SelectedItem}" SelectedIndex="{Binding SelectedIndex}"/>
+              IsVisible="{Binding IsStyleOptionsVisible}">
+            <ListBox BorderBrush="#9E9E9E" BorderThickness="1" ItemsSource="{Binding DataSource}"
+                     SelectedItem="{Binding SelectedItem}" SelectedIndex="{Binding SelectedIndex}" />
 
             <Grid Grid.Column="1" RowDefinitions="Auto,*" RowSpacing="10">
                 <Grid ColumnDefinitions="Auto,Auto" ColumnSpacing="34">
                     <StackPanel Spacing="8">
                         <TextBlock Text="Shadow types:" Margin="0,0,0,2" />
-                        <CheckBox Content="Glow" IsEnabled="{Binding IsGlowEnabled}" IsChecked="{Binding IsGlowChecked}"/>
-                        <CheckBox Content="Bevel" IsEnabled="{Binding IsShadowsEnabled}" IsChecked="{Binding IsBevelChecked}" />
-                        <CheckBox Content="Soft shadow" IsEnabled="{Binding IsShadowsEnabled}" IsChecked="{Binding IsSoftShadowChecked}" />
-                        <CheckBox Content="Hard shadow" IsEnabled="{Binding IsShadowsEnabled}" IsChecked="{Binding IsHardShadowChecked}" />
+                        <CheckBox Content="Glow" IsEnabled="{Binding IsGlowEnabled}"
+                                  IsChecked="{Binding IsGlowChecked}" />
+                        <CheckBox Content="Bevel" IsEnabled="{Binding IsShadowsEnabled}"
+                                  IsChecked="{Binding IsBevelChecked}" />
+                        <CheckBox Content="Soft shadow" IsEnabled="{Binding IsShadowsEnabled}"
+                                  IsChecked="{Binding IsSoftShadowChecked}" />
+                        <CheckBox Content="Hard shadow" IsEnabled="{Binding IsShadowsEnabled}"
+                                  IsChecked="{Binding IsHardShadowChecked}" />
                     </StackPanel>
 
                     <StackPanel Grid.Column="1" Spacing="8">
                         <CheckBox Content="Use for karaoke" IsChecked="{Binding IsUseForKaraokeChecked}" />
-                        <CheckBox Content="Highlight current word" IsChecked="{Binding IsHighlightForCurrentWordChecked}" IsEnabled="{Binding IsUseForKaraokeChecked}" />
+                        <CheckBox Content="Highlight current word"
+                                  IsChecked="{Binding IsHighlightForCurrentWordChecked}"
+                                  IsEnabled="{Binding IsUseForKaraokeChecked}" />
 
                         <!-- there's no masked textbox for hexadecimal input in Avalonia, so I use a normal textbox with a watermark and hope the user has a brain. (very big assumption) -->
-                        <Grid ColumnDefinitions="Auto, 80 ,Auto" RowDefinitions="Auto, Auto,Auto" ColumnSpacing="6" RowSpacing="4" IsEnabled="{Binding IsHighlightForCurrentWordChecked}">
+                        <Grid ColumnDefinitions="Auto, 80 ,Auto" RowDefinitions="Auto, Auto,Auto" ColumnSpacing="6"
+                              RowSpacing="4" IsEnabled="{Binding IsHighlightForCurrentWordChecked}">
                             <TextBlock Grid.Row="0" Grid.Column="0" Text="Text color:" VerticalAlignment="Center" />
-                            <TextBox Grid.Row="0" Grid.Column="1" VerticalContentAlignment="Center" Watermark="#RRGGBB" IsEnabled="{Binding IsCurrentWordTextColorEnabled}" Text="{Binding CurrentWordTextColor}"/>
-                            <ColorPicker Grid.Row="0" Grid.Column="2" IsAlphaEnabled="False" Color="{Binding CurrentWordTextColor}" IsEnabled="{Binding IsCurrentWordTextColorEnabled}"/>
+                            <TextBox Grid.Row="0" Grid.Column="1" VerticalContentAlignment="Center" Watermark="#RRGGBB"
+                                     IsEnabled="{Binding IsCurrentWordTextColorEnabled}"
+                                     Text="{Binding CurrentWordTextColor}" />
+                            <ColorPicker Grid.Row="0" Grid.Column="2" IsAlphaEnabled="False"
+                                         Color="{Binding CurrentWordTextColor}"
+                                         IsEnabled="{Binding IsCurrentWordTextColorEnabled}" />
 
                             <TextBlock Grid.Row="1" Grid.Column="0" Text="Outline color:" VerticalAlignment="Center" />
-                            <TextBox Grid.Row="1" Grid.Column="1" VerticalContentAlignment="Center" Watermark="#RRGGBB" IsEnabled="{Binding IsCurrentWordOutlineColorEnabled}" Text="{Binding CurrentWordOutlineColor}"/>
-                            <ColorPicker Grid.Row="1" Grid.Column="2" IsAlphaEnabled="False" Color="{Binding CurrentWordOutlineColor}" IsEnabled="{Binding IsCurrentWordOutlineColorEnabled}"/>
+                            <TextBox Grid.Row="1" Grid.Column="1" VerticalContentAlignment="Center" Watermark="#RRGGBB"
+                                     IsEnabled="{Binding IsCurrentWordOutlineColorEnabled}"
+                                     Text="{Binding CurrentWordOutlineColor}" />
+                            <ColorPicker Grid.Row="1" Grid.Column="2" IsAlphaEnabled="False"
+                                         Color="{Binding CurrentWordOutlineColor}"
+                                         IsEnabled="{Binding IsCurrentWordOutlineColorEnabled}" />
 
                             <TextBlock Grid.Row="2" Grid.Column="0" Text="Shadow color:" VerticalAlignment="Center" />
-                            <TextBox Grid.Row="2" Grid.Column="1" VerticalContentAlignment="Center" Watermark="#RRGGBB" IsEnabled="{Binding IsCurrentWordShadowColorEnabled}" Text="{Binding CurrentWordShadowColor}"/>
-                            <ColorPicker Grid.Row="2" Grid.Column="2" IsAlphaEnabled="False" Color="{Binding CurrentWordShadowColor}" IsEnabled="{Binding IsCurrentWordShadowColorEnabled}"/>
+                            <TextBox Grid.Row="2" Grid.Column="1" VerticalContentAlignment="Center" Watermark="#RRGGBB"
+                                     IsEnabled="{Binding IsCurrentWordShadowColorEnabled}"
+                                     Text="{Binding CurrentWordShadowColor}" />
+                            <ColorPicker Grid.Row="2" Grid.Column="2" IsAlphaEnabled="False"
+                                         Color="{Binding CurrentWordShadowColor}"
+                                         IsEnabled="{Binding IsCurrentWordShadowColorEnabled}" />
                         </Grid>
                     </StackPanel>
                 </Grid>
-                <Border Grid.Row= "1" BorderBrush="#9E9E9E" BorderThickness="1">
-                    <webViewControl:WebView Address="{Binding PreviewHtml}"/>
+                <Border Grid.Row="1" BorderBrush="#9E9E9E" BorderThickness="1">
+                    <webViewControl:WebView Address="{Binding PreviewHtml}" />
                 </Border>
-                
+
             </Grid>
         </Grid>
 
@@ -90,9 +112,13 @@
                     Orientation="Horizontal"
                     HorizontalAlignment="Right"
                     Spacing="10">
-            <TextBlock VerticalAlignment="Center" IsVisible="{Binding ConvertTextVisibility}" Foreground="#119eda" Text="{Binding ConvertedTextMessage}"/>
-            <ToggleButton Content="Auto Convert" IsChecked="{Binding IsAutoConvertActive}" IsEnabled="{Binding IsAutoConvertAvailable}" ToolTip.Tip="Enabling auto convert will allow you to turn this application into a tray icon when closed." Command="{Binding ToggleAutoConvertCommand}"/>
-            <Button Content="Convert" IsEnabled="{Binding IsConvertAvailable}" Command="{Binding ConvertCommand}"/>
+            <TextBlock VerticalAlignment="Center" IsVisible="{Binding ConvertTextVisibility}" Foreground="#119eda"
+                       Text="{Binding ConvertedTextMessage}" />
+            <ToggleButton Content="Auto Convert" IsChecked="{Binding IsAutoConvertActive}"
+                          IsEnabled="{Binding IsAutoConvertAvailable}"
+                          ToolTip.Tip="Enabling auto convert will allow you to turn this application into a tray icon when closed."
+                          Command="{Binding ToggleAutoConvertCommand}" />
+            <Button Content="Convert" IsEnabled="{Binding IsConvertAvailable}" Command="{Binding ConvertCommand}" />
         </StackPanel>
     </Grid>
 </Window>

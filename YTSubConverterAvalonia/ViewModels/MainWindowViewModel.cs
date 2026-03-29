@@ -19,19 +19,19 @@ namespace YTSubConverterAvalonia.ViewModels;
 
 public partial class MainWindowViewModel : ViewModelBase
 {
-    private readonly Dictionary<string, AssStyleOptions> _styleOptions;
-    private Dictionary<string, AssStyle> _styles = new();
     private readonly HashSet<string> _builtInStyleNames;
-    private AssStyle? _defaultStyle;
-    private DateTime _lastAutoConvertTime = DateTime.MinValue;
+    private readonly IFileDialogService _fileService;
+    private readonly Dictionary<string, AssStyleOptions> _styleOptions;
     private readonly FileSystemWatcher _subtitleModifyWatcher = new();
     private readonly FileSystemWatcher _subtitleRenameWatcher = new();
-    private readonly IFileDialogService _fileService;
-    
+    private AssStyle? _defaultStyle;
+    private DateTime _lastAutoConvertTime = DateTime.MinValue;
+    private Dictionary<string, AssStyle> _styles = new();
+
     public MainWindowViewModel(IFileDialogService fileDialogService)
     {
         _fileService = fileDialogService;
-        
+
         // UI localization goes here
 
         List<AssStyleOptions> builtInStyleOptions = AssStyleOptionsList.LoadFromString(Resources.DefaultStyleOptions);
@@ -40,9 +40,10 @@ public partial class MainWindowViewModel : ViewModelBase
         _builtInStyleNames = builtInStyleOptions.Select(o => o.Name).ToHashSet();
         _subtitleModifyWatcher.Changed += OnFileModified;
         _subtitleRenameWatcher.Changed += OnTmpFileChanged;
-        
+
         ClearUI();
     }
+
     public MainWindowViewModel() : this(new NoOpFileDialogService())
     {
         // Constructor for use in the IDE previewer since it doesn't have a file dialog service
@@ -59,51 +60,6 @@ public partial class MainWindowViewModel : ViewModelBase
     [ObservableProperty] public partial string InputFilePath { get; set; } = "";
     [ObservableProperty] public partial AssStyleOptions? SelectedItem { get; set; } = null;
     [ObservableProperty] public partial int SelectedIndex { get; set; } = -1;
-
-    partial void OnSelectedItemChanged(AssStyleOptions? value)
-    {
-        if (value is null)
-        {
-            return;
-        }
-        
-        var style = _styles[value.Name];
-        IsShadowsEnabled = style.HasShadow;
-
-        if (style is { HasOutline: true, HasOutlineBox: false })
-        {
-            IsGlowChecked = true;
-            IsGlowEnabled = false;
-        }
-        else
-        {
-            IsGlowChecked = style.HasShadow && value.ShadowTypes.Contains(ShadowType.Glow);
-        }
-        
-        IsBevelChecked = style.HasShadow && value.ShadowTypes.Contains(ShadowType.Bevel);
-        IsSoftShadowChecked = style.HasShadow && value.ShadowTypes.Contains(ShadowType.SoftShadow);
-        IsHardShadowChecked = style.HasShadow && value.ShadowTypes.Contains(ShadowType.HardShadow);
-        
-        var currentWordTextColor = value.CurrentWordTextColor;
-        var currentWordOutlineColor = value.CurrentWordOutlineColor;
-        var currentWordShadowColor = value.CurrentWordShadowColor;
-
-        IsUseForKaraokeChecked = value.IsKaraoke;
-        IsHighlightForCurrentWordChecked = value.IsKaraoke && !currentWordTextColor.IsEmpty;
-        
-        IsCurrentWordTextColorEnabled = IsHighlightForCurrentWordChecked;
-        CurrentWordTextColor = IsCurrentWordTextColorEnabled ? ColorUtil.ToHtml(currentWordTextColor) : "";
-        
-        IsCurrentWordOutlineColorEnabled = IsHighlightForCurrentWordChecked && style is { HasOutline: true, HasOutlineBox: false };
-        CurrentWordOutlineColor = IsCurrentWordOutlineColorEnabled ? ColorUtil.ToHtml(currentWordOutlineColor) : "";
-        
-        IsCurrentWordShadowColorEnabled = IsHighlightForCurrentWordChecked && style.HasShadow;
-        CurrentWordShadowColor = IsCurrentWordShadowColorEnabled ? ColorUtil.ToHtml(currentWordShadowColor) : "";
-        
-        
-        UpdateStylePreview();
-    }
-    
     [ObservableProperty] public partial bool IsGlowChecked { get; set; } = false;
     [ObservableProperty] public partial bool IsGlowEnabled { get; set; } = false;
     [ObservableProperty] public partial bool IsShadowsEnabled { get; set; } = false;
@@ -119,6 +75,47 @@ public partial class MainWindowViewModel : ViewModelBase
     [ObservableProperty] public partial string CurrentWordShadowColor { get; set; } = "";
     [ObservableProperty] public partial bool IsCurrentWordShadowColorEnabled { get; set; } = false;
     [ObservableProperty] public partial string PreviewHtml { get; set; } = "";
+
+    partial void OnSelectedItemChanged(AssStyleOptions? value)
+    {
+        if (value is null) return;
+
+        var style = _styles[value.Name];
+        IsShadowsEnabled = style.HasShadow;
+
+        if (style is { HasOutline: true, HasOutlineBox: false })
+        {
+            IsGlowChecked = true;
+            IsGlowEnabled = false;
+        }
+        else
+        {
+            IsGlowChecked = style.HasShadow && value.ShadowTypes.Contains(ShadowType.Glow);
+        }
+
+        IsBevelChecked = style.HasShadow && value.ShadowTypes.Contains(ShadowType.Bevel);
+        IsSoftShadowChecked = style.HasShadow && value.ShadowTypes.Contains(ShadowType.SoftShadow);
+        IsHardShadowChecked = style.HasShadow && value.ShadowTypes.Contains(ShadowType.HardShadow);
+
+        var currentWordTextColor = value.CurrentWordTextColor;
+        var currentWordOutlineColor = value.CurrentWordOutlineColor;
+        var currentWordShadowColor = value.CurrentWordShadowColor;
+
+        IsUseForKaraokeChecked = value.IsKaraoke;
+        IsHighlightForCurrentWordChecked = value.IsKaraoke && !currentWordTextColor.IsEmpty;
+
+        IsCurrentWordTextColorEnabled = IsHighlightForCurrentWordChecked;
+        CurrentWordTextColor = IsCurrentWordTextColorEnabled ? ColorUtil.ToHtml(currentWordTextColor) : "";
+
+        IsCurrentWordOutlineColorEnabled =
+            IsHighlightForCurrentWordChecked && style is { HasOutline: true, HasOutlineBox: false };
+        CurrentWordOutlineColor = IsCurrentWordOutlineColorEnabled ? ColorUtil.ToHtml(currentWordOutlineColor) : "";
+
+        IsCurrentWordShadowColorEnabled = IsHighlightForCurrentWordChecked && style.HasShadow;
+        CurrentWordShadowColor = IsCurrentWordShadowColorEnabled ? ColorUtil.ToHtml(currentWordShadowColor) : "";
+
+        UpdateStylePreview();
+    }
 
     partial void OnIsGlowCheckedChanged(bool value)
     {
@@ -140,10 +137,10 @@ public partial class MainWindowViewModel : ViewModelBase
 
     partial void OnIsHardShadowCheckedChanged(bool value)
     {
-        SelectedItem?.SetShadowTypeEnabled(ShadowType.HardShadow,  value); 
+        SelectedItem?.SetShadowTypeEnabled(ShadowType.HardShadow, value);
         UpdateStylePreview();
     }
-    
+
     partial void OnIsUseForKaraokeCheckedChanged(bool value)
     {
         SelectedItem?.IsKaraoke = value;
@@ -153,23 +150,35 @@ public partial class MainWindowViewModel : ViewModelBase
 
     partial void OnIsHighlightForCurrentWordCheckedChanged(bool value)
     {
-        if (SelectedItem is null)
-        {
-            return;
-        }
-        
+        if (SelectedItem is null) return;
+
         var style = _styles[SelectedItem.Name];
-        
-        // TODO: check how it's done in MainForm.cs
+
+        IsCurrentWordTextColorEnabled = value;
+        IsCurrentWordOutlineColorEnabled = value;
+        IsCurrentWordShadowColorEnabled = value;
+
+        CurrentWordTextColor = IsCurrentWordTextColorEnabled ? ColorUtil.ToHtml(style.PrimaryColor) : "";
+        CurrentWordOutlineColor = IsCurrentWordOutlineColorEnabled ? ColorUtil.ToHtml(style.OutlineColor) : "";
+        CurrentWordShadowColor = IsCurrentWordShadowColorEnabled ? ColorUtil.ToHtml(style.ShadowColor) : "";
+
+        UpdateStylePreview();
     }
-    
-    
+
 
     [RelayCommand]
-    private void ToggleStyleOptions()
+    private void ToggleStyleOptions(bool? value = null)
     {
-        IsStyleOptionsVisible = !IsStyleOptionsVisible;
-        WeakReferenceMessenger.Default.Send(new StyleOptionsVisibilityChangedMessage(IsStyleOptionsVisible));
+        if (value is null)
+        {
+            IsStyleOptionsVisible = !IsStyleOptionsVisible;
+            WeakReferenceMessenger.Default.Send(new StyleOptionsVisibilityChangedMessage(IsStyleOptionsVisible));
+        }
+        else
+        {
+            IsStyleOptionsVisible = (bool)value;
+            WeakReferenceMessenger.Default.Send(new StyleOptionsVisibilityChangedMessage((bool)value));
+        }
     }
 
     //TODO: See how YTSubConverter manages it's user interface
@@ -183,7 +192,7 @@ public partial class MainWindowViewModel : ViewModelBase
             var inputExtension = Path.GetExtension(InputFilePath).ToLower();
             SubtitleDocument outputDoc;
             string outputExtension;
-        
+
             switch (inputExtension)
             {
                 case ".ass":
@@ -191,23 +200,23 @@ public partial class MainWindowViewModel : ViewModelBase
                     var inputDoc = new AssDocument(InputFilePath, _styleOptions.Values.ToList());
                     outputDoc = new YttDocument(inputDoc);
                     outputExtension = ".ytt";
-                    
+
                     RefreshStyleList(inputDoc);
                     break;
                 }
-        
+
                 case ".ytt":
                 case ".srv3":
                 {
                     // Should there be some kind of way to create VisualizingAssDocument from here?
                     // Currently, it can only be done as a command line option
-                    
+
                     var inputDoc = new YttDocument(InputFilePath);
                     outputDoc = new AssDocument(inputDoc);
                     outputExtension = inputExtension == ".ytt" ? ".reverse.ass" : ".ass";
                     break;
                 }
-        
+
                 case ".sbv":
                 {
                     var inputDoc = new SbvDocument(InputFilePath);
@@ -215,7 +224,7 @@ public partial class MainWindowViewModel : ViewModelBase
                     outputExtension = ".srt";
                     break;
                 }
-        
+
                 default:
                 {
                     var inputDoc = SubtitleDocument.Load(InputFilePath);
@@ -224,10 +233,10 @@ public partial class MainWindowViewModel : ViewModelBase
                     break;
                 }
             }
-        
+
             var outputFilePath = Path.ChangeExtension(InputFilePath, outputExtension);
             outputDoc.Save(outputFilePath);
-        
+
             ConvertedTextMessage = "Successfully converted: " + Path.GetFileName(outputFilePath);
             ConvertTextVisibility = true;
             await Task.Delay(4000);
@@ -253,7 +262,7 @@ public partial class MainWindowViewModel : ViewModelBase
     private void PerformAutoConvert()
     {
         if ((DateTime.Now - _lastAutoConvertTime).TotalMilliseconds < 100) return;
-        
+
         Thread.Sleep(100);
         _ = Convert();
         _lastAutoConvertTime = DateTime.Now;
@@ -263,10 +272,7 @@ public partial class MainWindowViewModel : ViewModelBase
     private async Task LoadSubtitleButton()
     {
         var selectedFilePath = await _fileService.PickSingleFileAsync();
-        if (string.IsNullOrWhiteSpace(selectedFilePath))
-        {
-            return;
-        }
+        if (string.IsNullOrWhiteSpace(selectedFilePath)) return;
 
         LoadFile(selectedFilePath);
     }
@@ -283,13 +289,13 @@ public partial class MainWindowViewModel : ViewModelBase
     public void LoadFile(string filePath)
     {
         ClearUI();
-        
+
         try
         {
             var doc = SubtitleDocument.Load(filePath);
             PopulateUI(filePath, doc);
         }
-        catch(Exception e)
+        catch (Exception e)
         {
             Console.WriteLine(e);
             ClearUI();
@@ -301,23 +307,33 @@ public partial class MainWindowViewModel : ViewModelBase
     {
         InputFilePath = filePath;
 
-        var assDoc = doc as AssDocument;
-        if (assDoc is not null)
+        if (doc is AssDocument assDoc)
         {
             RefreshStyleList(assDoc);
             IsStyleOptionsAvailable = true;
         }
+        else
+        {
+            IsStyleOptionsAvailable = false;
+            ToggleStyleOptions(false);
+        }
+
         IsAutoConvertAvailable = true;
-        IsAutoConvertActive= false;
-        
+        IsAutoConvertActive = false;
+
         _subtitleModifyWatcher.EnableRaisingEvents = false;
-        _subtitleModifyWatcher.Path = Path.GetDirectoryName(filePath) ?? throw new DirectoryNotFoundException("Could not get directory name from file path");
+        _subtitleModifyWatcher.Path = Path.GetDirectoryName(filePath) ??
+                                      throw new DirectoryNotFoundException(
+                                          "Could not get directory name from file path");
         _subtitleModifyWatcher.Filter = Path.GetFileName(filePath);
-        
+
         _subtitleRenameWatcher.EnableRaisingEvents = false;
-        _subtitleRenameWatcher.Path = Path.GetDirectoryName(filePath) ?? throw new DirectoryNotFoundException("Could not get directory name from file path. Wait, how did the last one pass and this one fail?");
-        _subtitleRenameWatcher.Filter = Path.GetFileNameWithoutExtension(filePath) + "_tmp_*" + Path.GetExtension(filePath);
-        
+        _subtitleRenameWatcher.Path = Path.GetDirectoryName(filePath) ??
+                                      throw new DirectoryNotFoundException(
+                                          "Could not get directory name from file path. Wait, how did the last one pass and this one fail?");
+        _subtitleRenameWatcher.Filter =
+            Path.GetFileNameWithoutExtension(filePath) + "_tmp_*" + Path.GetExtension(filePath);
+
         IsConvertAvailable = true;
     }
 
@@ -325,15 +341,15 @@ public partial class MainWindowViewModel : ViewModelBase
     {
         _styles = assDoc.Styles.ToDictionary(s => s.Name);
         _defaultStyle = assDoc.DefaultStyle;
-        
+
         foreach (var style in _styles.Where(style => !_styleOptions.ContainsKey(style.Key)))
             _styleOptions.Add(style.Key, new AssStyleOptions(style.Value));
-        
+
         // this looks butt ugly and there has to be a better way for this to work
         DataSource = new ObservableList<AssStyleOptions>(assDoc.Styles.Select(s => _styleOptions[s.Name]));
 
         var styleIndex = assDoc.Styles.IndexOf(s => s.Name == SelectedItem?.Name);
-        SelectedIndex = styleIndex >= 0 ? styleIndex : 0; 
+        SelectedIndex = styleIndex >= 0 ? styleIndex : 0;
         // no need to update SelectedItem it auto follows. Causes some janky behavior if you manually make them follow
     }
 
@@ -355,20 +371,20 @@ public partial class MainWindowViewModel : ViewModelBase
         AssStyleOptionsList.SaveToFile(
             _styleOptions.Where(p => !_builtInStyleNames.Contains(p.Key))
                 .Select(p => p.Value)
-        ); 
+        );
     }
 
     private void UpdateStylePreview()
     {
-        if(SelectedItem is null)
+        if (SelectedItem is null)
         {
             PreviewHtml = "";
             return;
         }
-        
+
         var style = _styles[SelectedItem.Name];
         var html = HtmlStylePreviewGenerator.Generate(style, SelectedItem, _defaultStyle, 1);
-        
+
         PreviewHtml = "data:text/html;base64," + System.Convert.ToBase64String(Encoding.UTF8.GetBytes(html));
     }
 }
@@ -383,5 +399,5 @@ internal sealed class NoOpFileDialogService : IFileDialogService
 
 public class StyleOptionsVisibilityChangedMessage(bool styleState)
 {
-    public bool StyleState { get;} = styleState;
+    public bool StyleState { get; } = styleState;
 }

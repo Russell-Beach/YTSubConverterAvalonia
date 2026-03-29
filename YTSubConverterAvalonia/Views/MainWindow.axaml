@@ -8,7 +8,7 @@
         Width="725" Height="125" CanResize="False" CanMaximize="False"
         x:Class="YTSubConverterAvalonia.Views.MainWindow"
         x:DataType="vm:MainWindowViewModel"
-        Icon="/Assets/avalonia-logo.ico"
+        Icon="/Assets/icon.ico"
         Title="YTSubConverter Avalonia">
         <Window.Resources>
             <ResourceDictionary>

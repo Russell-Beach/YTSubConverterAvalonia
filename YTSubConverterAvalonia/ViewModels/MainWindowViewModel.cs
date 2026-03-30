@@ -376,12 +376,8 @@ public partial class MainWindowViewModel : ViewModelBase
     }
 
     private void UpdateStylePreview()
-    {
-        if (SelectedItem is null)
-        {
-            PreviewHtml = "";
-            return;
-        }
+    { 
+        if (SelectedItem is null) return;
 
         var style = _styles[SelectedItem.Name];
         var html = HtmlStylePreviewGenerator.Generate(style, SelectedItem, _defaultStyle, 1);

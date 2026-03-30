@@ -116,7 +116,6 @@
                        Text="{Binding ConvertedTextMessage}" />
             <ToggleButton Content="Auto Convert" IsChecked="{Binding IsAutoConvertActive}"
                           IsEnabled="{Binding IsAutoConvertAvailable}"
-                          ToolTip.Tip="Enabling auto convert will allow you to turn this application into a tray icon when closed."
                           Command="{Binding ToggleAutoConvertCommand}" />
             <Button Content="Convert" IsEnabled="{Binding IsConvertAvailable}" Command="{Binding ConvertCommand}" />
         </StackPanel>

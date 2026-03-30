@@ -4,7 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:webViewControl="clr-namespace:WebViewControl;assembly=WebViewControl.Avalonia"
-        mc:Ignorable="d" d:DesignWidth="725" d:DesignHeight="125"
+        mc:Ignorable="d" d:DesignWidth="725" d:DesignHeight="500"
         Width="725" Height="125" CanResize="False" CanMaximize="False"
         x:Class="YTSubConverterAvalonia.Views.MainWindow"
         x:DataType="vm:MainWindowViewModel"

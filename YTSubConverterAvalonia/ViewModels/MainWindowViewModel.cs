@@ -47,6 +47,7 @@ public partial class MainWindowViewModel : ViewModelBase
     public MainWindowViewModel() : this(new NoOpFileDialogService())
     {
         // Constructor for use in the IDE previewer since it doesn't have a file dialog service
+        ToggleStyleOptions(true);
     }
 
     [ObservableProperty] public partial ObservableList<AssStyleOptions> DataSource { get; set; } = [];

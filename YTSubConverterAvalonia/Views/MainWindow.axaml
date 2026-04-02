@@ -119,7 +119,7 @@
             <ToggleButton Content="Auto Convert" IsChecked="{Binding IsAutoConvertActive}"
                           IsEnabled="{Binding IsAutoConvertAvailable}"
                           Command="{Binding ToggleAutoConvertCommand}"
-                          ToolTip.Tip="When auto convert is active, closing the application will turn it into a tray icon and continue conversions."/>
+                          ToolTip.Tip="When auto convert is active, closing the application will turn it into a tray icon and continue conversions." />
             <Button Content="Convert" IsEnabled="{Binding IsConvertAvailable}" Command="{Binding ConvertCommand}" />
         </StackPanel>
     </Grid>

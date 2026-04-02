@@ -38,9 +38,7 @@ public partial class MainWindow : Window
     {
         var firstFile = GetFirstSupportedFile(e.DataTransfer);
         if (firstFile is not null && DataContext is MainWindowViewModel mainWindow)
-        {
             mainWindow.LoadFile(firstFile.Path.LocalPath);
-        }
     }
 
     private static IStorageItem? GetFirstSupportedFile(IDataTransfer dataTransfer)

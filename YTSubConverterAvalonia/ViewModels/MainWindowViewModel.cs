@@ -10,7 +10,6 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
 using MsBox.Avalonia;
-using MsBox.Avalonia.Enums;
 using ObservableCollections;
 using YTSubConverter.Shared;
 using YTSubConverter.Shared.Formats;
@@ -109,13 +108,17 @@ public partial class MainWindowViewModel : ViewModelBase
         IsHighlightForCurrentWordChecked = value.IsKaraoke && !currentWordTextColor.IsEmpty;
 
         IsCurrentWordTextColorEnabled = IsHighlightForCurrentWordChecked;
-        CurrentWordTextColor = IsCurrentWordTextColorEnabled ? ToAvaloniaColor(currentWordTextColor) : Colors.Transparent;
+        CurrentWordTextColor =
+            IsCurrentWordTextColorEnabled ? ToAvaloniaColor(currentWordTextColor) : Colors.Transparent;
 
-        IsCurrentWordOutlineColorEnabled = IsHighlightForCurrentWordChecked && style is { HasOutline: true, HasOutlineBox: false };
-        CurrentWordOutlineColor = IsCurrentWordTextColorEnabled ? ToAvaloniaColor(currentWordOutlineColor) : Colors.Transparent;
+        IsCurrentWordOutlineColorEnabled =
+            IsHighlightForCurrentWordChecked && style is { HasOutline: true, HasOutlineBox: false };
+        CurrentWordOutlineColor =
+            IsCurrentWordTextColorEnabled ? ToAvaloniaColor(currentWordOutlineColor) : Colors.Transparent;
 
         IsCurrentWordShadowColorEnabled = IsHighlightForCurrentWordChecked && style.HasShadow;
-        CurrentWordShadowColor = IsCurrentWordTextColorEnabled ? ToAvaloniaColor(currentWordShadowColor) : Colors.Transparent;
+        CurrentWordShadowColor =
+            IsCurrentWordTextColorEnabled ? ToAvaloniaColor(currentWordShadowColor) : Colors.Transparent;
 
         UpdateStylePreview();
     }
@@ -160,30 +163,38 @@ public partial class MainWindowViewModel : ViewModelBase
         IsCurrentWordTextColorEnabled = value;
         IsCurrentWordOutlineColorEnabled = value;
         IsCurrentWordShadowColorEnabled = value;
-        
+
         CurrentWordTextColor = IsCurrentWordTextColorEnabled ? ToAvaloniaColor(style.PrimaryColor) : Colors.Transparent;
-        CurrentWordOutlineColor = IsCurrentWordOutlineColorEnabled ? ToAvaloniaColor(style.OutlineColor) : Colors.Transparent;
-        CurrentWordShadowColor = IsCurrentWordShadowColorEnabled ? ToAvaloniaColor(style.ShadowColor) : Colors.Transparent;
+        CurrentWordOutlineColor =
+            IsCurrentWordOutlineColorEnabled ? ToAvaloniaColor(style.OutlineColor) : Colors.Transparent;
+        CurrentWordShadowColor =
+            IsCurrentWordShadowColorEnabled ? ToAvaloniaColor(style.ShadowColor) : Colors.Transparent;
 
         UpdateStylePreview();
     }
 
     partial void OnCurrentWordTextColorChanged(Color value)
     {
-        SelectedItem?.CurrentWordTextColor = IsHighlightForCurrentWordChecked ? ToSystemDrawingColor(value) : System.Drawing.Color.Empty;
+        SelectedItem?.CurrentWordTextColor = IsHighlightForCurrentWordChecked
+            ? ToSystemDrawingColor(value)
+            : System.Drawing.Color.Empty;
         UpdateStylePreview();
     }
-    
+
     partial void OnCurrentWordOutlineColorChanged(Color value)
     {
-        SelectedItem?.CurrentWordOutlineColor = IsHighlightForCurrentWordChecked ? ToSystemDrawingColor(value) : System.Drawing.Color.Empty;
+        SelectedItem?.CurrentWordOutlineColor = IsHighlightForCurrentWordChecked
+            ? ToSystemDrawingColor(value)
+            : System.Drawing.Color.Empty;
 
         UpdateStylePreview();
     }
-    
+
     partial void OnCurrentWordShadowColorChanged(Color value)
     {
-        SelectedItem?.CurrentWordShadowColor = IsHighlightForCurrentWordChecked ? ToSystemDrawingColor(value) : System.Drawing.Color.Empty;
+        SelectedItem?.CurrentWordShadowColor = IsHighlightForCurrentWordChecked
+            ? ToSystemDrawingColor(value)
+            : System.Drawing.Color.Empty;
         UpdateStylePreview();
     }
 
@@ -201,7 +212,7 @@ public partial class MainWindowViewModel : ViewModelBase
             WeakReferenceMessenger.Default.Send(new StyleOptionsVisibilityChangedMessage((bool)value));
         }
     }
-    
+
     [RelayCommand]
     private async Task Convert()
     {
@@ -360,7 +371,7 @@ public partial class MainWindowViewModel : ViewModelBase
 
         foreach (var style in _styles.Where(style => !_styleOptions.ContainsKey(style.Key)))
             _styleOptions.Add(style.Key, new AssStyleOptions(style.Value));
-        
+
         DataSource = new ObservableList<AssStyleOptions>(assDoc.Styles.Select(s => _styleOptions[s.Name]));
 
         var styleIndex = assDoc.Styles.IndexOf(s => s.Name == SelectedItem?.Name);
@@ -389,7 +400,7 @@ public partial class MainWindowViewModel : ViewModelBase
     }
 
     private void UpdateStylePreview()
-    { 
+    {
         if (SelectedItem is null) return;
 
         var style = _styles[SelectedItem.Name];
@@ -405,12 +416,12 @@ public partial class MainWindowViewModel : ViewModelBase
 
     private static System.Drawing.Color ToSystemDrawingColor(Color color)
     {
-        return  System.Drawing.Color.FromArgb(color.A, color.R, color.G, color.B);
+        return System.Drawing.Color.FromArgb(color.A, color.R, color.G, color.B);
     }
 
     private static async void ShowErrorMessage(Exception e)
     {
-        var box = MessageBoxManager.GetMessageBoxStandard("Error", e.Message, ButtonEnum.Ok);
+        var box = MessageBoxManager.GetMessageBoxStandard("Error", e.Message);
         var result = await box.ShowAsync();
     }
 }

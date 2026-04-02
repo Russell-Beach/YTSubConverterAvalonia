@@ -12,27 +12,27 @@
         Icon="/Assets/icon.ico"
         Title="YTSubConverter Avalonia"
         Background="{DynamicResource BackgroundColor}">
-        <Window.Resources>
-            <ResourceDictionary>
-                <converters:ColorToHexConverter x:Key="ColorToHexConverter" IsAlphaVisible="False"/>
-                <ResourceDictionary.ThemeDictionaries>
-                    <ResourceDictionary x:Key="Light">
-                        <Color x:Key="BackgroundColor">White</Color>
-                    </ResourceDictionary>
-                    <ResourceDictionary x:Key="Dark">
-                        <!-- ReSharper disable once Xaml.RedundantResource -->
-                        <Color x:Key="BackgroundColor">#222222</Color>
-                    </ResourceDictionary>
-                </ResourceDictionary.ThemeDictionaries>
-            </ResourceDictionary>
-        </Window.Resources>
+    <Window.Resources>
+        <ResourceDictionary>
+            <converters:ColorToHexConverter x:Key="ColorToHexConverter" IsAlphaVisible="False" />
+            <ResourceDictionary.ThemeDictionaries>
+                <ResourceDictionary x:Key="Light">
+                    <Color x:Key="BackgroundColor">White</Color>
+                </ResourceDictionary>
+                <ResourceDictionary x:Key="Dark">
+                    <!-- ReSharper disable once Xaml.RedundantResource -->
+                    <Color x:Key="BackgroundColor">#222222</Color>
+                </ResourceDictionary>
+            </ResourceDictionary.ThemeDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
 
     <Design.DataContext>
         <!-- This only sets the DataContext for the previewer in an IDE, to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
         <vm:MainWindowViewModel />
     </Design.DataContext>
 
-    
+
     <Grid RowDefinitions="Auto,Auto,*,Auto" Margin="8" RowSpacing="10" DragDrop.AllowDrop="True"
           Background="{DynamicResource BackgroundColor}">
         <Grid Grid.Row="0" ColumnDefinitions="*,Auto" ColumnSpacing="8">
@@ -76,7 +76,7 @@
 
                         <Grid ColumnDefinitions="Auto, 80 ,Auto" RowDefinitions="Auto, Auto,Auto" ColumnSpacing="6"
                               RowSpacing="4" IsEnabled="{Binding IsHighlightForCurrentWordChecked}">
-                            
+
                             <TextBlock Grid.Row="0" Grid.Column="0" Text="Text color:" VerticalAlignment="Center" />
                             <TextBox Grid.Row="0" Grid.Column="1" VerticalContentAlignment="Center"
                                      IsEnabled="{Binding IsCurrentWordTextColorEnabled}"

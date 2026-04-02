@@ -35,8 +35,6 @@ public partial class MainWindowViewModel : ViewModelBase
     {
         _fileService = fileDialogService;
 
-        // UI localization goes here
-
         List<AssStyleOptions> builtInStyleOptions = AssStyleOptionsList.LoadFromString(Resources.DefaultStyleOptions);
         List<AssStyleOptions> customStyleOptions = AssStyleOptionsList.LoadFromFile();
         _styleOptions = customStyleOptions.Concat(builtInStyleOptions).ToDictionaryOverwrite(o => o.Name);

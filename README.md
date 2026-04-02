@@ -18,13 +18,11 @@ with a different UI library.
 | Unified platform UI code   |          Yes           |         No          |
 | Drag & Drop Files          |    Yes<sup>1</sup>     |         Yes         |
 | Dark Theme                 |          Yes           |         No          |
-| System tray application    |     No<sup>2</sup>     |         No          |
+| System tray application    |          Yes           |         No          |
 
 <sup>1</sup> Drag & Drop is only supported on Windows &
 macOS, [not on Linux due to limitations in Avalonia's drag & drop
 support.](https://github.com/AvaloniaUI/Avalonia/issues/6085)
-
-<sup>2</sup> Soon™ (hopefully)
 
 ## Credits
 
@@ -35,5 +33,4 @@ support.](https://github.com/AvaloniaUI/Avalonia/issues/6085)
 
 Got time and want to commit? Here's things that could be done:
 
-- Implement system tray application support when using auto-convert mode
 - Implement UI localization using the ResX files in YTSubConverter.Shared

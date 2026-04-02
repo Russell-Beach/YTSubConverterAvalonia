@@ -21,12 +21,18 @@ public partial class MainWindow : Window
     private static void DragOver(object? sender, DragEventArgs e)
     {
         // TODO: make this only register copy effect for the file formats we actually want
-        e.DragEffects = e.Data.Contains(DataFormats.FileNames) ? DragDropEffects.Copy : DragDropEffects.None;
+        e.DragEffects = e.DataTransfer.Contains(DataFormat.File)
+            ? DragDropEffects.Copy
+            : DragDropEffects.None;
     }
 
     private void Drop(object? sender, DragEventArgs e)
     {
-        if (DataContext is MainWindowViewModel mainWindow) mainWindow.LoadFile(e.Data.GetFileNames().ToList()[0]);
+        var firstFile = e.DataTransfer.TryGetFiles()?.FirstOrDefault();
+        if (firstFile is not null && DataContext is MainWindowViewModel mainWindow)
+        {
+            mainWindow.LoadFile(firstFile.Path.LocalPath);
+        }
     }
 
     protected override void OnClosing(WindowClosingEventArgs e)

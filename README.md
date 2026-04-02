@@ -10,6 +10,8 @@ would be interesting to share.
 Since it uses the YTSubConverter.Shared library, it implements all the same features that YTSubConverter has, but just
 with a different UI library.
 
+The only main feature differences beyond the UI can be found in the color pickers for highlighting karaoke words and system tray support when the application is closed while auto-convert is active. For the most part, it's probably best to just use [the version of YTSubConverter that is native to your platform](https://github.com/arcusmaximus/YTSubConverter/releases) unless you are a fan of using applications that have 10x the memory footprint.
+
 ## Compared to YTSubConverter.UI.Win/Mac/Linux
 
 |                            | YTSubConverterAvalonia | YTSubConverter.UI.X |
@@ -34,3 +36,4 @@ support.](https://github.com/AvaloniaUI/Avalonia/issues/6085)
 Got time and want to commit? Here's things that could be done:
 
 - Implement UI localization using the ResX files in YTSubConverter.Shared
+- If you see any code that you can improve, feel free to do so

@@ -30,6 +30,11 @@ public partial class MainWindowViewModel : ViewModelBase
     private DateTime _lastAutoConvertTime = DateTime.MinValue;
     private Dictionary<string, AssStyle> _styles = new();
 
+    public Action? RequestShowMainWindow { private get; set; }
+    public Action? RequestExitApplication { private get; set; }
+
+    public bool IsExitRequested { get; private set; }
+
     public MainWindowViewModel(IFileDialogService fileDialogService)
     {
         _fileService = fileDialogService;
@@ -76,6 +81,19 @@ public partial class MainWindowViewModel : ViewModelBase
     [ObservableProperty] public partial Color CurrentWordShadowColor { get; set; }
     [ObservableProperty] public partial bool IsCurrentWordShadowColorEnabled { get; set; } = false;
     [ObservableProperty] public partial string PreviewHtml { get; set; } = "";
+    [ObservableProperty] public partial bool IsWindowHiddenToTray { get; set; } = false;
+
+    public bool IsTrayIconVisible => IsWindowHiddenToTray && IsAutoConvertActive;
+
+    partial void OnIsAutoConvertActiveChanged(bool value)
+    {
+        OnPropertyChanged(nameof(IsTrayIconVisible));
+    }
+
+    partial void OnIsWindowHiddenToTrayChanged(bool value)
+    {
+        OnPropertyChanged(nameof(IsTrayIconVisible));
+    }
 
     // This sometimes says it's not being used and IDK why that happens. Some communityMVVM toolkit code shenanigans
     // ReSharper disable once UnusedMember.Local
@@ -314,6 +332,21 @@ public partial class MainWindowViewModel : ViewModelBase
             _ = Convert();
     }
 
+    [RelayCommand]
+    private void ShowMainWindow()
+    {
+        IsWindowHiddenToTray = false;
+        RequestShowMainWindow?.Invoke();
+    }
+
+    [RelayCommand]
+    private void ExitApplication()
+    {
+        IsExitRequested = true;
+        SaveStylesOnClose();
+        RequestExitApplication?.Invoke();
+    }
+
     public void LoadFile(string filePath)
     {
         ClearUI();
@@ -387,6 +420,7 @@ public partial class MainWindowViewModel : ViewModelBase
         UpdateStylePreview();
         IsStyleOptionsAvailable = false;
         IsAutoConvertActive = false;
+        IsWindowHiddenToTray = false;
         IsAutoConvertAvailable = false;
         IsConvertAvailable = false;
     }

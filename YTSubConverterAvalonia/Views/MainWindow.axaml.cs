@@ -51,7 +51,20 @@ public partial class MainWindow : Window
 
     protected override void OnClosing(WindowClosingEventArgs e)
     {
-        if (DataContext is MainWindowViewModel mainWindow) mainWindow.SaveStylesOnClose();
+        if (DataContext is MainWindowViewModel mainWindow)
+        {
+            if (mainWindow is { IsExitRequested: false, IsAutoConvertActive: true })
+            {
+                e.Cancel = true;
+                mainWindow.IsWindowHiddenToTray = true;
+                Hide();
+                return;
+            }
+
+            mainWindow.IsWindowHiddenToTray = false;
+            mainWindow.SaveStylesOnClose();
+        }
+
         base.OnClosing(e);
     }
 }

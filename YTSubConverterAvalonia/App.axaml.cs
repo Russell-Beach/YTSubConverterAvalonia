@@ -11,6 +11,8 @@ namespace YTSubConverterAvalonia;
 
 public class App : Application
 {
+    private MainWindow? _mainWindow;
+
     public override void Initialize()
     {
         AvaloniaXamlLoader.Load(this);
@@ -24,12 +26,28 @@ public class App : Application
             // More info: https://docs.avaloniaui.net/docs/guides/development-guides/data-validation#manage-validationplugins
             DisableAvaloniaDataAnnotationValidation();
 
-            var mainWindow = new MainWindow();
-            mainWindow.DataContext = new MainWindowViewModel(new AvaloniaFileDialogService(mainWindow));
-            desktop.MainWindow = mainWindow;
+            _mainWindow = new MainWindow();
+            var viewModel = new MainWindowViewModel(new AvaloniaFileDialogService(_mainWindow));
+            
+            DataContext = viewModel;
+            _mainWindow.DataContext = viewModel;
+
+            viewModel.RequestShowMainWindow = ShowMainWindow;
+            viewModel.RequestExitApplication = () => desktop.Shutdown();
+
+            desktop.MainWindow = _mainWindow;
         }
 
         base.OnFrameworkInitializationCompleted();
+    }
+
+    private void ShowMainWindow()
+    {
+        if (_mainWindow is null) return;
+
+        _mainWindow.Show();
+        _mainWindow.WindowState = Avalonia.Controls.WindowState.Normal;
+        _mainWindow.Activate();
     }
 
     private void DisableAvaloniaDataAnnotationValidation()

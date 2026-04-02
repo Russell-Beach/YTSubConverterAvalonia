@@ -2,7 +2,9 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              x:Class="YTSubConverterAvalonia.App"
              xmlns:local="using:YTSubConverterAvalonia"
-             RequestedThemeVariant="Default">
+             xmlns:vm="clr-namespace:YTSubConverterAvalonia.ViewModels"
+             RequestedThemeVariant="Default"
+             x:DataType="vm:MainWindowViewModel">
     <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
 
     <Application.DataTemplates>
@@ -13,4 +15,22 @@
         <SimpleTheme />
         <StyleInclude Source="avares://Avalonia.Controls.ColorPicker/Themes/Simple/Simple.xaml" />
     </Application.Styles>
+    
+    <TrayIcon.Icons>
+        <TrayIcons>
+            <TrayIcon Icon="/Assets/icon.ico"
+                      ToolTipText="YTSubConverter"
+                      IsVisible="{Binding IsTrayIconVisible}"
+                      Command="{Binding ShowMainWindowCommand}">
+                <TrayIcon.Menu>
+                    <NativeMenu>
+                        <NativeMenuItem Header="Auto-converting file:" IsEnabled="False"/>
+                        <NativeMenuItem Header="{Binding InputFilePath}" IsEnabled="False"/>
+                        <NativeMenuItemSeparator />
+                        <NativeMenuItem Header="Exit" Command="{Binding ExitApplicationCommand}"/>
+                    </NativeMenu>
+                </TrayIcon.Menu>
+            </TrayIcon>
+        </TrayIcons>
+    </TrayIcon.Icons>
 </Application>

@@ -31,4 +31,3 @@ support on those platforms.
 Got time and want to commit? Here's things that could be done:
 - Implement system tray application support when using auto-convert mode
 - Implement UI localization using the ResX files in YTSubConverter.Shared
-- Implement error dialogs

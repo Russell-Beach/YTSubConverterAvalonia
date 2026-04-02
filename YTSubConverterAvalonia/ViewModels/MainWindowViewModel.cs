@@ -9,6 +9,8 @@ using Avalonia.Media;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
+using MsBox.Avalonia;
+using MsBox.Avalonia.Enums;
 using ObservableCollections;
 using YTSubConverter.Shared;
 using YTSubConverter.Shared.Formats;
@@ -262,8 +264,7 @@ public partial class MainWindowViewModel : ViewModelBase
         }
         catch (Exception e)
         {
-            Console.WriteLine(e);
-            throw;
+            ShowErrorMessage(e);
         }
     }
 
@@ -315,9 +316,8 @@ public partial class MainWindowViewModel : ViewModelBase
         }
         catch (Exception e)
         {
-            Console.WriteLine(e);
+            ShowErrorMessage(e);
             ClearUI();
-            throw;
         }
     }
 
@@ -408,6 +408,12 @@ public partial class MainWindowViewModel : ViewModelBase
     private static System.Drawing.Color ToSystemDrawingColor(Color color)
     {
         return  System.Drawing.Color.FromArgb(color.A, color.R, color.G, color.B);
+    }
+
+    private static async void ShowErrorMessage(Exception e)
+    {
+        var box = MessageBoxManager.GetMessageBoxStandard("Error", e.Message, ButtonEnum.Ok);
+        var result = await box.ShowAsync();
     }
 }
 

@@ -77,6 +77,8 @@ public partial class MainWindowViewModel : ViewModelBase
     [ObservableProperty] public partial bool IsCurrentWordShadowColorEnabled { get; set; } = false;
     [ObservableProperty] public partial string PreviewHtml { get; set; } = "";
 
+    // This sometimes says it's not being used and IDK why that happens. Some communityMVVM toolkit code shenanigans
+    // ReSharper disable once UnusedMember.Local
     partial void OnSelectedItemChanged(AssStyleOptions? value)
     {
         if (value is null) return;

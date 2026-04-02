@@ -9,7 +9,8 @@
         x:Class="YTSubConverterAvalonia.Views.MainWindow"
         x:DataType="vm:MainWindowViewModel"
         Icon="/Assets/icon.ico"
-        Title="YTSubConverter Avalonia">
+        Title="YTSubConverter Avalonia"
+        Background="{DynamicResource BackgroundColor}">
         <Window.Resources>
             <ResourceDictionary>
                 <ResourceDictionary.ThemeDictionaries>
@@ -17,7 +18,8 @@
                         <Color x:Key="BackgroundColor">White</Color>
                     </ResourceDictionary>
                     <ResourceDictionary x:Key="Dark">
-                        <Color x:Key="BackgroundColor">#282828</Color>
+                        <!-- ReSharper disable once Xaml.RedundantResource -->
+                        <Color x:Key="BackgroundColor">#222222</Color>
                     </ResourceDictionary>
                 </ResourceDictionary.ThemeDictionaries>
             </ResourceDictionary>
@@ -28,9 +30,7 @@
         <vm:MainWindowViewModel />
     </Design.DataContext>
 
-
-    <!-- For some incredibly unfunny reason, you CANNOT drop an item into a grid's background unless it has a background color assigned! 
-         Now I have to take the extra 9 yards to consider if the user's theme is light or dark instead of letting Avalonia do its job!!! -->
+    
     <Grid RowDefinitions="Auto,Auto,*,Auto" Margin="8" RowSpacing="10" DragDrop.AllowDrop="True"
           Background="{DynamicResource BackgroundColor}">
         <Grid Grid.Row="0" ColumnDefinitions="*,Auto" ColumnSpacing="8">

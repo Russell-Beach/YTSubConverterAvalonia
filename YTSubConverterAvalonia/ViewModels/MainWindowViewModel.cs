@@ -203,10 +203,7 @@ public partial class MainWindowViewModel : ViewModelBase
             WeakReferenceMessenger.Default.Send(new StyleOptionsVisibilityChangedMessage((bool)value));
         }
     }
-
-    //TODO: See how YTSubConverter manages it's user interface
-    //      https://github.com/arcusmaximus/YTSubConverter/blob/master/YTSubConverter.UI.Linux/MainWindow.cs#L130
-
+    
     [RelayCommand]
     private async Task Convert()
     {

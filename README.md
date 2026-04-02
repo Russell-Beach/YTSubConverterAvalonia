@@ -2,6 +2,8 @@
 
 It's [YTSubConverter](https://github.com/arcusmaximus/YTSubConverter), but implemented in Avalonia UI
 
+![screenshot-darkmode.png](images/screenshot.png)
+
 I made this mostly for fun and to learn about using YTSubConverter.Shared and improve on my MVVM skills for use in a different project, but figured it
 would be interesting to share.
 Since it uses the YTSubConverter.Shared library, it implements all the same features that YTSubConverter has, but just

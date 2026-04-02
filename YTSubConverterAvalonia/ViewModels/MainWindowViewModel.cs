@@ -362,13 +362,11 @@ public partial class MainWindowViewModel : ViewModelBase
 
         foreach (var style in _styles.Where(style => !_styleOptions.ContainsKey(style.Key)))
             _styleOptions.Add(style.Key, new AssStyleOptions(style.Value));
-
-        // this looks butt ugly and there has to be a better way for this to work
+        
         DataSource = new ObservableList<AssStyleOptions>(assDoc.Styles.Select(s => _styleOptions[s.Name]));
 
         var styleIndex = assDoc.Styles.IndexOf(s => s.Name == SelectedItem?.Name);
         SelectedIndex = styleIndex >= 0 ? styleIndex : 0;
-        // no need to update SelectedItem it auto follows. Causes some janky behavior if you manually make them follow
     }
 
     private void ClearUI()

@@ -160,8 +160,6 @@ public partial class MainWindowViewModel : ViewModelBase
         IsCurrentWordTextColorEnabled = value;
         IsCurrentWordOutlineColorEnabled = value;
         IsCurrentWordShadowColorEnabled = value;
-
-        Console.WriteLine();
         
         CurrentWordTextColor = IsCurrentWordTextColorEnabled ? ToAvaloniaColor(style.PrimaryColor) : Colors.Transparent;
         CurrentWordOutlineColor = IsCurrentWordOutlineColorEnabled ? ToAvaloniaColor(style.OutlineColor) : Colors.Transparent;

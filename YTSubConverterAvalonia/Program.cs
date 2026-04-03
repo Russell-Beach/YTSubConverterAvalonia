@@ -1,5 +1,6 @@
 ﻿using System;
 using Avalonia;
+using YTSubConverter.Shared;
 
 namespace YTSubConverterAvalonia;
 
@@ -11,6 +12,13 @@ internal sealed class Program
     [STAThread]
     public static void Main(string[] args)
     {
+        if (args.Length > 0)
+        {
+            // TODO: AvaloniaTextMeasurer to give CommandLineHandler output to console for failed conversions
+            CommandLineHandler.Handle(args);
+            return;
+        }
+        
         BuildAvaloniaApp()
             .StartWithClassicDesktopLifetime(args);
     }

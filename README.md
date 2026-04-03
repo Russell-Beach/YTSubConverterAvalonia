@@ -36,4 +36,5 @@ support.](https://github.com/AvaloniaUI/Avalonia/issues/6085)
 Got time and want to commit? Here's things that could be done:
 
 - Implement UI localization using the ResX files in YTSubConverter.Shared
+- Implement an ITextMeasurer for Avalonia to give feedback for failed command line conversions
 - If you see any code that you can improve, feel free to do so

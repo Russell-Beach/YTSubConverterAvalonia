@@ -2,7 +2,10 @@
 
 It's [YTSubConverter](https://github.com/arcusmaximus/YTSubConverter), but implemented in Avalonia UI
 
-![screenshot-darkmode.png](images/screenshot.png)
+| ![screenshot-darkmode.png](images/screenshot.png) | ![screenshot-Linux.png](images/screenshot-Linux.png) |
+|:-------------------------------------------------:|:----------------------------------------------------:|
+|              Windows 11 in dark mode              |   Linux (Fedora 43, KDE Plasma 6.5) in light mode    |
+
 
 I made this mostly for fun and to learn about using YTSubConverter.Shared and improve on my MVVM skills for use in a
 different project, but figured it
@@ -37,4 +40,5 @@ Got time and want to commit? Here's things that could be done:
 
 - Implement UI localization using the ResX files in YTSubConverter.Shared
 - Implement an ITextMeasurer for Avalonia to give feedback for failed command line conversions
+- Get a screenshot of the application running on ARM and x86 macOS and add it to the README
 - If you see any code that you can improve, feel free to do so

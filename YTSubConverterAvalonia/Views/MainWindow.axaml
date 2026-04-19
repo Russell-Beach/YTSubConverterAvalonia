@@ -35,7 +35,7 @@
     <Grid RowDefinitions="Auto,Auto,*,Auto" Margin="8" RowSpacing="10" DragDrop.AllowDrop="True"
           Background="{DynamicResource BackgroundColor}">
         <Grid Grid.Row="0" ColumnDefinitions="*,Auto" ColumnSpacing="8">
-            <TextBox Watermark="Drag and drop .ass/.sbv file or click the select file button"
+            <TextBox PlaceholderText="Drag and drop .ass/.sbv file or click the select file button"
                      Text="{Binding InputFilePath, Mode=TwoWay}" IsReadOnly="True" />
             <Button Grid.Column="1" Content="Select File" Command="{Binding LoadSubtitleButtonCommand}" />
         </Grid>

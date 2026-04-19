@@ -3,7 +3,6 @@
         xmlns:vm="using:YTSubConverterAvalonia.ViewModels"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:webViewControl="clr-namespace:WebViewControl;assembly=WebViewControl.Avalonia"
         xmlns:converters="clr-namespace:Avalonia.Controls.Converters;assembly=Avalonia.Controls.ColorPicker"
         mc:Ignorable="d" d:DesignWidth="725" d:DesignHeight="500"
         Width="725" Height="125" CanResize="False" CanMaximize="False"
@@ -104,7 +103,7 @@
                     </StackPanel>
                 </Grid>
                 <Border Grid.Row="1" BorderBrush="#9E9E9E" BorderThickness="1">
-                    <webViewControl:WebView Address="{Binding PreviewHtml}" />
+                    <NativeWebView Source="{Binding PreviewHtml}" />
                 </Border>
 
             </Grid>

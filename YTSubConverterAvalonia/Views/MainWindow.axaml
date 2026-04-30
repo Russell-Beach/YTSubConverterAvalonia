@@ -32,7 +32,7 @@
     </Design.DataContext>
 
 
-    <Grid RowDefinitions="Auto,Auto,*,Auto" Margin="8" RowSpacing="10" DragDrop.AllowDrop="True"
+    <Grid RowDefinitions="Auto,*,Auto" Margin="8" RowSpacing="10" DragDrop.AllowDrop="True"
           Background="{DynamicResource BackgroundColor}">
         <Grid Grid.Row="0" ColumnDefinitions="*,Auto" ColumnSpacing="8">
             <TextBox PlaceholderText="Drag and drop .ass/.sbv file or click the select file button"
@@ -40,76 +40,81 @@
             <Button Grid.Column="1" Content="Select File" Command="{Binding LoadSubtitleButtonCommand}" />
         </Grid>
 
-        <ToggleButton Grid.Row="1"
-                      Content="Style Options"
-                      HorizontalAlignment="Left"
-                      Command="{Binding ToggleStyleOptionsCommand}"
-                      IsEnabled="{Binding IsStyleOptionsAvailable}" />
+        <GroupBox Grid.Row="1" Padding="4">
+            <GroupBox.Header>
+                <ToggleButton
+                    Content="Style Options"
+                    HorizontalAlignment="Left"
+                    Command="{Binding ToggleStyleOptionsCommand}"
+                    IsEnabled="{Binding IsStyleOptionsAvailable}" />
+            </GroupBox.Header>
 
-        <Grid Grid.Row="2"
-              ColumnDefinitions="250,*"
-              ColumnSpacing="8"
-              IsVisible="{Binding IsStyleOptionsVisible}">
-            <ListBox BorderBrush="#9E9E9E" BorderThickness="1" ItemsSource="{Binding DataSource}"
-                     SelectedItem="{Binding SelectedItem}" SelectedIndex="{Binding SelectedIndex}" />
+            <Grid
+                ColumnDefinitions="250,*"
+                ColumnSpacing="8"
+                IsVisible="{Binding IsStyleOptionsVisible}">
+                <ListBox BorderBrush="#9E9E9E" BorderThickness="1" ItemsSource="{Binding DataSource}"
+                         SelectedItem="{Binding SelectedItem}" SelectedIndex="{Binding SelectedIndex}" />
 
-            <Grid Grid.Column="1" RowDefinitions="Auto,*" RowSpacing="10">
-                <Grid ColumnDefinitions="Auto,Auto" ColumnSpacing="34">
-                    <StackPanel Spacing="8">
-                        <TextBlock Text="Shadow types:" Margin="0,0,0,2" />
-                        <CheckBox Content="Glow" IsEnabled="{Binding IsGlowEnabled}"
-                                  IsChecked="{Binding IsGlowChecked}" />
-                        <CheckBox Content="Bevel" IsEnabled="{Binding IsShadowsEnabled}"
-                                  IsChecked="{Binding IsBevelChecked}" />
-                        <CheckBox Content="Soft shadow" IsEnabled="{Binding IsShadowsEnabled}"
-                                  IsChecked="{Binding IsSoftShadowChecked}" />
-                        <CheckBox Content="Hard shadow" IsEnabled="{Binding IsShadowsEnabled}"
-                                  IsChecked="{Binding IsHardShadowChecked}" />
-                    </StackPanel>
+                <Grid Grid.Column="1" RowDefinitions="Auto,*" RowSpacing="10">
+                    <Grid ColumnDefinitions="Auto,Auto" ColumnSpacing="34">
+                        <StackPanel Spacing="8">
+                            <TextBlock Text="Shadow types:" Margin="0,0,0,2" />
+                            <CheckBox Content="Glow" IsEnabled="{Binding IsGlowEnabled}"
+                                      IsChecked="{Binding IsGlowChecked}" />
+                            <CheckBox Content="Bevel" IsEnabled="{Binding IsShadowsEnabled}"
+                                      IsChecked="{Binding IsBevelChecked}" />
+                            <CheckBox Content="Soft shadow" IsEnabled="{Binding IsShadowsEnabled}"
+                                      IsChecked="{Binding IsSoftShadowChecked}" />
+                            <CheckBox Content="Hard shadow" IsEnabled="{Binding IsShadowsEnabled}"
+                                      IsChecked="{Binding IsHardShadowChecked}" />
+                        </StackPanel>
 
-                    <StackPanel Grid.Column="1" Spacing="8">
-                        <CheckBox Content="Use for karaoke" IsChecked="{Binding IsUseForKaraokeChecked}" />
-                        <CheckBox Content="Highlight current word"
-                                  IsChecked="{Binding IsHighlightForCurrentWordChecked}"
-                                  IsEnabled="{Binding IsUseForKaraokeChecked}" />
+                        <StackPanel Grid.Column="1" Spacing="8">
+                            <CheckBox Content="Use for karaoke" IsChecked="{Binding IsUseForKaraokeChecked}" />
+                            <CheckBox Content="Highlight current word"
+                                      IsChecked="{Binding IsHighlightForCurrentWordChecked}"
+                                      IsEnabled="{Binding IsUseForKaraokeChecked}" />
 
-                        <Grid ColumnDefinitions="Auto, 80 ,Auto" RowDefinitions="Auto, Auto,Auto" ColumnSpacing="6"
-                              RowSpacing="4" IsEnabled="{Binding IsHighlightForCurrentWordChecked}">
+                            <Grid ColumnDefinitions="Auto, 80 ,Auto" RowDefinitions="Auto, Auto,Auto" ColumnSpacing="6"
+                                  RowSpacing="4" IsEnabled="{Binding IsHighlightForCurrentWordChecked}">
 
-                            <TextBlock Grid.Row="0" Grid.Column="0" Text="Text color:" VerticalAlignment="Center" />
-                            <TextBox Grid.Row="0" Grid.Column="1" VerticalContentAlignment="Center"
-                                     IsEnabled="{Binding IsCurrentWordTextColorEnabled}"
-                                     Text="{Binding CurrentWordTextColor, Converter={StaticResource ColorToHexConverter}}" />
-                            <ColorPicker Grid.Row="0" Grid.Column="2" IsAlphaEnabled="False"
-                                         Color="{Binding CurrentWordTextColor}"
-                                         IsEnabled="{Binding IsCurrentWordTextColorEnabled}" />
+                                <TextBlock Grid.Row="0" Grid.Column="0" Text="Text color:" VerticalAlignment="Center" />
+                                <TextBox Grid.Row="0" Grid.Column="1" VerticalContentAlignment="Center"
+                                         IsEnabled="{Binding IsCurrentWordTextColorEnabled}"
+                                         Text="{Binding CurrentWordTextColor, Converter={StaticResource ColorToHexConverter}}" />
+                                <ColorPicker Grid.Row="0" Grid.Column="2" IsAlphaEnabled="False"
+                                             Color="{Binding CurrentWordTextColor}"
+                                             IsEnabled="{Binding IsCurrentWordTextColorEnabled}" />
 
-                            <TextBlock Grid.Row="1" Grid.Column="0" Text="Outline color:" VerticalAlignment="Center" />
-                            <TextBox Grid.Row="1" Grid.Column="1" VerticalContentAlignment="Center"
-                                     IsEnabled="{Binding IsCurrentWordOutlineColorEnabled}"
-                                     Text="{Binding CurrentWordOutlineColor, Converter={StaticResource ColorToHexConverter}}" />
-                            <ColorPicker Grid.Row="1" Grid.Column="2" IsAlphaEnabled="False"
-                                         Color="{Binding CurrentWordOutlineColor}"
-                                         IsEnabled="{Binding IsCurrentWordOutlineColorEnabled}" />
+                                <TextBlock Grid.Row="1" Grid.Column="0" Text="Outline color:"
+                                           VerticalAlignment="Center" />
+                                <TextBox Grid.Row="1" Grid.Column="1" VerticalContentAlignment="Center"
+                                         IsEnabled="{Binding IsCurrentWordOutlineColorEnabled}"
+                                         Text="{Binding CurrentWordOutlineColor, Converter={StaticResource ColorToHexConverter}}" />
+                                <ColorPicker Grid.Row="1" Grid.Column="2" IsAlphaEnabled="False"
+                                             Color="{Binding CurrentWordOutlineColor}"
+                                             IsEnabled="{Binding IsCurrentWordOutlineColorEnabled}" />
 
-                            <TextBlock Grid.Row="2" Grid.Column="0" Text="Shadow color:" VerticalAlignment="Center" />
-                            <TextBox Grid.Row="2" Grid.Column="1" VerticalContentAlignment="Center"
-                                     IsEnabled="{Binding IsCurrentWordShadowColorEnabled}"
-                                     Text="{Binding CurrentWordShadowColor, Converter={StaticResource ColorToHexConverter}}" />
-                            <ColorPicker Grid.Row="2" Grid.Column="2" IsAlphaEnabled="False"
-                                         Color="{Binding CurrentWordShadowColor}"
-                                         IsEnabled="{Binding IsCurrentWordShadowColorEnabled}" />
-                        </Grid>
-                    </StackPanel>
+                                <TextBlock Grid.Row="2" Grid.Column="0" Text="Shadow color:" VerticalAlignment="Center" />
+                                <TextBox Grid.Row="2" Grid.Column="1" VerticalContentAlignment="Center"
+                                         IsEnabled="{Binding IsCurrentWordShadowColorEnabled}"
+                                         Text="{Binding CurrentWordShadowColor, Converter={StaticResource ColorToHexConverter}}" />
+                                <ColorPicker Grid.Row="2" Grid.Column="2" IsAlphaEnabled="False"
+                                             Color="{Binding CurrentWordShadowColor}"
+                                             IsEnabled="{Binding IsCurrentWordShadowColorEnabled}" />
+                            </Grid>
+                        </StackPanel>
+                    </Grid>
+                    <Border Grid.Row="1" BorderBrush="#9E9E9E" BorderThickness="1">
+                        <NativeWebView Source="{Binding PreviewHtml}" />
+                    </Border>
+
                 </Grid>
-                <Border Grid.Row="1" BorderBrush="#9E9E9E" BorderThickness="1">
-                    <NativeWebView Source="{Binding PreviewHtml}" />
-                </Border>
-
             </Grid>
-        </Grid>
+        </GroupBox>
 
-        <StackPanel Grid.Row="3"
+        <StackPanel Grid.Row="2"
                     Orientation="Horizontal"
                     HorizontalAlignment="Right"
                     Spacing="10">

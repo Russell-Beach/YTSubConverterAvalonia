@@ -179,8 +179,8 @@ public partial class MainWindowViewModel : ViewModelBase
         var style = _styles[SelectedItem.Name];
 
         IsCurrentWordTextColorEnabled = value;
-        IsCurrentWordOutlineColorEnabled = value;
-        IsCurrentWordShadowColorEnabled = value;
+        IsCurrentWordOutlineColorEnabled = value && style is { HasOutline: true, HasOutlineBox: false };
+        IsCurrentWordShadowColorEnabled = value && style.HasShadow;
 
         CurrentWordTextColor = IsCurrentWordTextColorEnabled ? ToAvaloniaColor(style.PrimaryColor) : Colors.Transparent;
         CurrentWordOutlineColor =

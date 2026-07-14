@@ -22,15 +22,11 @@ The only main feature differences beyond the UI can be found in the color picker
 | YTSubConverter Conversions |          Yes           |         Yes         |
 | YTT Style Preview          |    Yes<sup>1</sup>     |         Yes         |
 | Unified platform UI code   |          Yes           |         No          |
-| Drag & Drop Files          |    Yes<sup>2</sup>     |         Yes         |
+| Drag & Drop Files          |          Yes           |         Yes         |
 | Dark Theme                 |          Yes           |         No          |
 | System tray application    |          Yes           |         No          |
 
 <sup>1</sup> YTT Style Previewer uses Avalonia's NativeWebView control which [requires WPE Webkit](https://docs.avaloniaui.net/docs/app-development/embedding-web-content#linux) to be installed on Linux.
-
-<sup>2</sup> Drag & Drop is only supported on Windows &
-macOS, [not on Linux due to limitations in Avalonia's drag & drop
-support.](https://github.com/AvaloniaUI/Avalonia/issues/6085)
 
 ## Credits
 

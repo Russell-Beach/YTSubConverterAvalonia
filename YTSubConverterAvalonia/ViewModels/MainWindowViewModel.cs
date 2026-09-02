@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -10,7 +11,8 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
 using MsBox.Avalonia;
-using ObservableCollections;
+using MsBox.Avalonia.Dto;
+using MsBox.Avalonia.Enums;
 using YTSubConverter.Shared;
 using YTSubConverter.Shared.Formats;
 using YTSubConverter.Shared.Formats.Ass;
@@ -42,11 +44,11 @@ public partial class MainWindowViewModel : ViewModelBase
         List<AssStyleOptions> builtInStyleOptions = AssStyleOptionsList.LoadFromString(Resources.DefaultStyleOptions);
         List<AssStyleOptions> customStyleOptions = AssStyleOptionsList.LoadFromFile();
         _styleOptions = customStyleOptions.Concat(builtInStyleOptions).ToDictionaryOverwrite(o => o.Name);
-        _builtInStyleNames = builtInStyleOptions.Select(o => o.Name).ToHashSet();
+        _builtInStyleNames = [.. builtInStyleOptions.Select(o => o.Name)];
         _subtitleModifyWatcher.Changed += OnFileModified;
         _subtitleRenameWatcher.Changed += OnTmpFileChanged;
 
-        ClearUI();
+        ClearUi();
     }
 
     public MainWindowViewModel() : this(new NoOpFileDialogService())
@@ -55,7 +57,7 @@ public partial class MainWindowViewModel : ViewModelBase
         ToggleStyleOptions(true);
     }
 
-    [ObservableProperty] public partial ObservableList<AssStyleOptions> DataSource { get; set; } = [];
+    [ObservableProperty] public partial ObservableCollection<AssStyleOptions> DataSource { get; set; } = [];
     [ObservableProperty] public partial bool IsStyleOptionsVisible { get; set; } = false;
     [ObservableProperty] public partial bool IsConvertAvailable { get; set; } = false;
     [ObservableProperty] public partial bool IsAutoConvertAvailable { get; set; } = false;
@@ -291,7 +293,7 @@ public partial class MainWindowViewModel : ViewModelBase
         }
         catch (Exception e)
         {
-            ShowErrorMessage(e);
+            await ShowErrorMessage(e);
         }
     }
 
@@ -349,21 +351,21 @@ public partial class MainWindowViewModel : ViewModelBase
 
     public void LoadFile(string filePath)
     {
-        ClearUI();
+        ClearUi();
 
         try
         {
             var doc = SubtitleDocument.Load(filePath);
-            PopulateUI(filePath, doc);
+            PopulateUi(filePath, doc);
         }
         catch (Exception e)
         {
-            ShowErrorMessage(e);
-            ClearUI();
+            _ = ShowErrorMessage(e);
+            ClearUi();
         }
     }
 
-    private void PopulateUI(string filePath, SubtitleDocument doc)
+    private void PopulateUi(string filePath, SubtitleDocument doc)
     {
         InputFilePath = filePath;
 
@@ -405,13 +407,13 @@ public partial class MainWindowViewModel : ViewModelBase
         foreach (var style in _styles.Where(style => !_styleOptions.ContainsKey(style.Key)))
             _styleOptions.Add(style.Key, new AssStyleOptions(style.Value));
 
-        DataSource = new ObservableList<AssStyleOptions>(assDoc.Styles.Select(s => _styleOptions[s.Name]));
+        DataSource = [.. assDoc.Styles.Select(s => _styleOptions[s.Name])];
 
         var styleIndex = assDoc.Styles.IndexOf(s => s.Name == SelectedItem?.Name);
         SelectedIndex = styleIndex >= 0 ? styleIndex : 0;
     }
 
-    private void ClearUI()
+    private void ClearUi()
     {
         _styles = new Dictionary<string, AssStyle>();
         _defaultStyle = null;
@@ -453,10 +455,15 @@ public partial class MainWindowViewModel : ViewModelBase
         return System.Drawing.Color.FromArgb(color.A, color.R, color.G, color.B);
     }
 
-    private static async void ShowErrorMessage(Exception e)
+    private static async Task ShowErrorMessage(Exception e)
     {
-        var box = MessageBoxManager.GetMessageBoxStandard("Error", e.Message);
-        var result = await box.ShowAsync();
+        var box = MessageBoxManager.GetMessageBoxStandard(new MessageBoxStandardParams()
+        {
+            ContentTitle = "Error",
+            ContentMessage = e.Message,
+            Icon = Icon.Error,
+        });
+        await box.ShowAsync();
     }
 }
 

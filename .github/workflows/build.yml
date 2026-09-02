@@ -4,6 +4,13 @@ on:
   push:
     branches:
       - master
+    paths:
+      - 'YTSubConverterAvalonia/**'
+  pull_request:
+    branches:
+      - master
+    paths:
+      - 'YTSubConverterAvalonia/**'
 
 jobs:
   build:

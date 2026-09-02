@@ -1,0 +1,98 @@
+name: Build and Release
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+    name: Build (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            runtime: win-x64
+            archiveName: YTSubConverterAvalonia-win-x64.zip
+
+          - os: ubuntu-latest
+            runtime: linux-x64
+            archiveName: YTSubConverterAvalonia-linux-x64.tar.gz
+
+          - os: macos-latest
+            runtime: osx-x64
+            archiveName: YTSubConverterAvalonia-osx-x64.zip
+
+          - os: macos-latest
+            runtime: osx-arm64
+            archiveName: YTSubConverterAvalonia-osx-arm64.zip
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Publish app
+        run: |
+          dotnet publish ./YTSubConverterAvalonia/YTSubConverterAvalonia.csproj \
+            -c Release \
+            -r ${{ matrix.runtime }} \
+            --self-contained true \
+            -p:PublishSingleFile=false \
+            -o ./publish
+
+      - name: Archive Windows/Mac
+        if: matrix.os != 'ubuntu-latest'
+        shell: pwsh
+        run: |
+          Compress-Archive `
+            -Path ./publish/* `
+            -DestinationPath ./${{ matrix.archiveName }}
+
+      - name: Archive Linux
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          tar -czf ${{ matrix.archiveName }} -C ./publish .
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: artifact-${{ matrix.runtime }}
+          path: ./${{ matrix.archiveName }}
+
+  release:
+    name: Create GitHub Release
+    needs: build
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: ./artifacts
+
+      - name: Display downloaded artifacts
+        run: ls -R ./artifacts
+
+      - name: Create GitHub Release and Upload Assets
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: build-${{ github.run_number }}
+          name: Build ${{ github.run_number }}
+          files: |
+            ./artifacts/artifact-win-x64/*.zip
+            ./artifacts/artifact-linux-x64/*.tar.gz
+            ./artifacts/artifact-osx-x64/*.zip
+            ./artifacts/artifact-osx-arm64/*.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

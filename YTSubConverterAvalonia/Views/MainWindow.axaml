@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:converters="clr-namespace:Avalonia.Controls.Converters;assembly=Avalonia.Controls.ColorPicker"
+        xmlns:res="clr-namespace:YTSubConverter.Shared;assembly=YTSubConverter.Shared"
         mc:Ignorable="d" d:DesignWidth="725" d:DesignHeight="500"
         Width="725" Height="125" CanResize="False" CanMaximize="False"
         x:Class="YTSubConverterAvalonia.Views.MainWindow"
@@ -35,15 +36,15 @@
     <Grid RowDefinitions="Auto,*,Auto" Margin="8" RowSpacing="10" DragDrop.AllowDrop="True"
           Background="{DynamicResource BackgroundColor}">
         <Grid Grid.Row="0" ColumnDefinitions="*,Auto" ColumnSpacing="8">
-            <TextBox PlaceholderText="Drag and drop .ass/.sbv file or click the select file button"
+            <TextBox PlaceholderText="{x:Static res:Resources.DragNDropTip}"
                      Text="{Binding InputFilePath, Mode=TwoWay}" IsReadOnly="True" />
-            <Button Grid.Column="1" Content="Select File" Command="{Binding LoadSubtitleButtonCommand}" />
+            <Button Grid.Column="1" Content="..." Command="{Binding LoadSubtitleButtonCommand}" Padding="8, 0" />
         </Grid>
 
-        <GroupBox Grid.Row="1" Padding="4">
+        <GroupBox Grid.Row="1" Padding="4" CornerRadius="0">
             <GroupBox.Header>
                 <ToggleButton
-                    Content="Style Options"
+                    Content="{x:Static res:Resources.StyleOptions}"
                     HorizontalAlignment="Left"
                     Command="{Binding ToggleStyleOptionsCommand}"
                     IsEnabled="{Binding IsStyleOptionsAvailable}" />
@@ -59,27 +60,27 @@
                 <Grid Grid.Column="1" RowDefinitions="Auto,*" RowSpacing="10">
                     <Grid ColumnDefinitions="Auto,Auto" ColumnSpacing="34">
                         <StackPanel Spacing="8">
-                            <TextBlock Text="Shadow types:" Margin="0,0,0,2" />
-                            <CheckBox Content="Glow" IsEnabled="{Binding IsGlowEnabled}"
+                            <TextBlock Text="{x:Static res:Resources.ShadowTypes}" Margin="0,0,0,2" />
+                            <CheckBox Content="{x:Static res:Resources.Glow}" IsEnabled="{Binding IsGlowEnabled}"
                                       IsChecked="{Binding IsGlowChecked}" />
-                            <CheckBox Content="Bevel" IsEnabled="{Binding IsShadowsEnabled}"
+                            <CheckBox Content="{x:Static res:Resources.Bevel}" IsEnabled="{Binding IsShadowsEnabled}"
                                       IsChecked="{Binding IsBevelChecked}" />
-                            <CheckBox Content="Soft shadow" IsEnabled="{Binding IsShadowsEnabled}"
+                            <CheckBox Content="{x:Static res:Resources.SoftShadow}" IsEnabled="{Binding IsShadowsEnabled}"
                                       IsChecked="{Binding IsSoftShadowChecked}" />
-                            <CheckBox Content="Hard shadow" IsEnabled="{Binding IsShadowsEnabled}"
+                            <CheckBox Content="{x:Static res:Resources.HardShadow}" IsEnabled="{Binding IsShadowsEnabled}"
                                       IsChecked="{Binding IsHardShadowChecked}" />
                         </StackPanel>
 
                         <StackPanel Grid.Column="1" Spacing="8">
-                            <CheckBox Content="Use for karaoke" IsChecked="{Binding IsUseForKaraokeChecked}" />
-                            <CheckBox Content="Highlight current word"
+                            <CheckBox Content="{x:Static res:Resources.UseForKaraoke}" IsChecked="{Binding IsUseForKaraokeChecked}" />
+                            <CheckBox Content="{x:Static res:Resources.HighlightCurrentWord}"
                                       IsChecked="{Binding IsHighlightForCurrentWordChecked}"
                                       IsEnabled="{Binding IsUseForKaraokeChecked}" />
 
                             <Grid ColumnDefinitions="Auto, 80 ,Auto" RowDefinitions="Auto, Auto,Auto" ColumnSpacing="6"
                                   RowSpacing="4" IsEnabled="{Binding IsHighlightForCurrentWordChecked}">
 
-                                <TextBlock Grid.Row="0" Grid.Column="0" Text="Text color:" VerticalAlignment="Center" />
+                                <TextBlock Grid.Row="0" Grid.Column="0" Text="{x:Static res:Resources.KaraokeTextColor}" VerticalAlignment="Center" />
                                 <TextBox Grid.Row="0" Grid.Column="1" VerticalContentAlignment="Center"
                                          IsEnabled="{Binding IsCurrentWordTextColorEnabled}"
                                          Text="{Binding CurrentWordTextColor, Converter={StaticResource ColorToHexConverter}}" />
@@ -87,7 +88,7 @@
                                              Color="{Binding CurrentWordTextColor}"
                                              IsEnabled="{Binding IsCurrentWordTextColorEnabled}" />
 
-                                <TextBlock Grid.Row="1" Grid.Column="0" Text="Outline color:"
+                                <TextBlock Grid.Row="1" Grid.Column="0" Text="{x:Static res:Resources.KaraokeOutlineColor}"
                                            VerticalAlignment="Center" />
                                 <TextBox Grid.Row="1" Grid.Column="1" VerticalContentAlignment="Center"
                                          IsEnabled="{Binding IsCurrentWordOutlineColorEnabled}"
@@ -96,7 +97,7 @@
                                              Color="{Binding CurrentWordOutlineColor}"
                                              IsEnabled="{Binding IsCurrentWordOutlineColorEnabled}" />
 
-                                <TextBlock Grid.Row="2" Grid.Column="0" Text="Shadow color:" VerticalAlignment="Center" />
+                                <TextBlock Grid.Row="2" Grid.Column="0" Text="{x:Static res:Resources.KaraokeShadowColor}" VerticalAlignment="Center" />
                                 <TextBox Grid.Row="2" Grid.Column="1" VerticalContentAlignment="Center"
                                          IsEnabled="{Binding IsCurrentWordShadowColorEnabled}"
                                          Text="{Binding CurrentWordShadowColor, Converter={StaticResource ColorToHexConverter}}" />
@@ -120,11 +121,12 @@
                     Spacing="10">
             <TextBlock VerticalAlignment="Center" IsVisible="{Binding ConvertTextVisibility}" Foreground="#119eda"
                        Text="{Binding ConvertedTextMessage}" />
-            <ToggleButton Content="Auto Convert" IsChecked="{Binding IsAutoConvertActive}"
+            <ToggleButton Content="{x:Static res:Resources.Autoconvert}" IsChecked="{Binding IsAutoConvertActive}"
+                          Padding="32, 4"
                           IsEnabled="{Binding IsAutoConvertAvailable}"
                           Command="{Binding ToggleAutoConvertCommand}"
-                          ToolTip.Tip="When auto convert is active, closing the application will turn it into a tray icon and continue conversions." />
-            <Button Content="Convert" IsEnabled="{Binding IsConvertAvailable}" Command="{Binding ConvertCommand}" />
+                          />
+            <Button Content="{x:Static res:Resources.Convert}" Padding="32, 4" IsEnabled="{Binding IsConvertAvailable}" Command="{Binding ConvertCommand}" />
         </StackPanel>
     </Grid>
 </Window>

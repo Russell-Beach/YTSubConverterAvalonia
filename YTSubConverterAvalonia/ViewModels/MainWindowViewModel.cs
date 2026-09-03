@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -56,7 +57,7 @@ public partial class MainWindowViewModel : ViewModelBase
         // Constructor for use in the IDE previewer since it doesn't have a file dialog service
         ToggleStyleOptions(true);
     }
-
+    
     [ObservableProperty] public partial ObservableCollection<AssStyleOptions> DataSource { get; set; } = [];
     [ObservableProperty] public partial bool IsStyleOptionsVisible { get; set; } = false;
     [ObservableProperty] public partial bool IsConvertAvailable { get; set; } = false;
@@ -286,14 +287,14 @@ public partial class MainWindowViewModel : ViewModelBase
             var outputFilePath = Path.ChangeExtension(InputFilePath, outputExtension);
             outputDoc.Save(outputFilePath);
 
-            ConvertedTextMessage = "Successfully converted: " + Path.GetFileName(outputFilePath);
+            ConvertedTextMessage = string.Format(Resources.SuccessfullyCreated0, Path.GetFileName(outputFilePath));
             ConvertTextVisibility = true;
             await Task.Delay(4000);
             ConvertTextVisibility = false;
         }
         catch (Exception e)
         {
-            await ShowErrorMessage(e);
+            await ShowErrorMessage(e.Message);
         }
     }
 
@@ -360,7 +361,7 @@ public partial class MainWindowViewModel : ViewModelBase
         }
         catch (Exception e)
         {
-            _ = ShowErrorMessage(e);
+            _ = ShowErrorMessage(string.Format(Resources.FailedToLoadFile0, e.Message));
             ClearUi();
         }
     }
@@ -392,7 +393,7 @@ public partial class MainWindowViewModel : ViewModelBase
         _subtitleRenameWatcher.EnableRaisingEvents = false;
         _subtitleRenameWatcher.Path = Path.GetDirectoryName(filePath) ??
                                       throw new DirectoryNotFoundException(
-                                          "Could not get directory name from file path. Wait, how did the last one pass and this one fail?");
+                                          "Could not get directory name from file path");
         _subtitleRenameWatcher.Filter =
             Path.GetFileNameWithoutExtension(filePath) + "_tmp_*" + Path.GetExtension(filePath);
 
@@ -442,7 +443,7 @@ public partial class MainWindowViewModel : ViewModelBase
         var style = _styles[SelectedItem.Name];
         var html = HtmlStylePreviewGenerator.Generate(style, SelectedItem, _defaultStyle, 1);
 
-        PreviewHtml = "data:text/html;base64," + System.Convert.ToBase64String(Encoding.UTF8.GetBytes(html));
+        PreviewHtml = "data:text/html;charset=utf-8;base64," + System.Convert.ToBase64String(Encoding.UTF8.GetBytes(html));
     }
 
     private static Color ToAvaloniaColor(System.Drawing.Color color)
@@ -455,12 +456,12 @@ public partial class MainWindowViewModel : ViewModelBase
         return System.Drawing.Color.FromArgb(color.A, color.R, color.G, color.B);
     }
 
-    private static async Task ShowErrorMessage(Exception e)
+    private static async Task ShowErrorMessage(string e)
     {
         var box = MessageBoxManager.GetMessageBoxStandard(new MessageBoxStandardParams()
         {
-            ContentTitle = "Error",
-            ContentMessage = e.Message,
+            ContentTitle = Resources.Error,
+            ContentMessage = e,
             Icon = Icon.Error,
         });
         await box.ShowAsync();

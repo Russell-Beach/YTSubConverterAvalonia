@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Runtime.InteropServices;
 using Avalonia;
 using YTSubConverter.Shared;
+using YTSubConverterAvalonia.Services;
+using OperatingSystem = System.OperatingSystem;
 
 namespace YTSubConverterAvalonia;
 
@@ -14,8 +17,13 @@ internal sealed class Program
     {
         if (args.Length > 0)
         {
-            // TODO: AvaloniaTextMeasurer to give CommandLineHandler output to console for failed conversions
-            CommandLineHandler.Handle(args);
+            if (OperatingSystem.IsWindows())
+            {
+                AttachConsole(AttachParentProcess);
+            }
+            using AvaloniaTextMeasurer textMeasurer = new();
+            CommandLineHandler.Handle(args, textMeasurer);
+            
             return;
         }
         
@@ -31,4 +39,8 @@ internal sealed class Program
             .WithInterFont()
             .LogToTrace();
     }
+        [DllImport("kernel32.dll")]
+        private static extern bool AttachConsole(int dwProcessId);
+
+        private const int AttachParentProcess = -1;
 }

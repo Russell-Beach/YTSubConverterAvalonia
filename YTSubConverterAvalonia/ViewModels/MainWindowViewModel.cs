@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Avalonia.Media;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
@@ -32,11 +32,6 @@ public partial class MainWindowViewModel : ViewModelBase
     private DateTime _lastAutoConvertTime = DateTime.MinValue;
     private Dictionary<string, AssStyle> _styles = new();
 
-    public Action? RequestShowMainWindow { private get; set; }
-    public Action? RequestExitApplication { private get; set; }
-
-    public bool IsExitRequested { get; private set; }
-
     public MainWindowViewModel(IFileDialogService fileDialogService)
     {
         _fileService = fileDialogService;
@@ -57,11 +52,26 @@ public partial class MainWindowViewModel : ViewModelBase
         ToggleStyleOptions(true);
     }
 
+    public Action? RequestShowMainWindow { private get; set; }
+    public Action? RequestExitApplication { private get; set; }
+
+    public bool IsExitRequested { get; private set; }
+
     [ObservableProperty] public partial ObservableCollection<AssStyleOptions> DataSource { get; set; } = [];
     [ObservableProperty] public partial bool IsStyleOptionsVisible { get; set; } = false;
-    [ObservableProperty] public partial bool IsConvertAvailable { get; set; } = false;
-    [ObservableProperty] public partial bool IsAutoConvertAvailable { get; set; } = false;
-    [ObservableProperty] public partial bool IsStyleOptionsAvailable { get; set; } = false;
+
+    [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(ConvertCommand))]
+    public partial bool IsConvertAvailable { get; set; } = false;
+
+    [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(AutoConvertButtonPressedCommand), nameof(ToggleAutoConvertButtonCommand))]
+    public partial bool IsAutoConvertAvailable { get; set; } = false;
+
+    [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(ToggleStyleOptionsCommand))]
+    public partial bool IsStyleOptionsAvailable { get; set; } = false;
+
     [ObservableProperty] public partial bool IsAutoConvertActive { get; set; } = false;
     [ObservableProperty] public partial bool ConvertTextVisibility { get; set; } = false;
     [ObservableProperty] public partial string ConvertedTextMessage { get; set; } = "";
@@ -97,8 +107,6 @@ public partial class MainWindowViewModel : ViewModelBase
         OnPropertyChanged(nameof(IsTrayIconVisible));
     }
 
-    // This sometimes says it's not being used and IDK why that happens. Some communityMVVM toolkit code shenanigans
-    // ReSharper disable once UnusedMember.Local
     partial void OnSelectedItemChanged(AssStyleOptions? value)
     {
         if (value is null) return;
@@ -129,16 +137,16 @@ public partial class MainWindowViewModel : ViewModelBase
 
         IsCurrentWordTextColorEnabled = IsHighlightForCurrentWordChecked;
         CurrentWordTextColor =
-            IsCurrentWordTextColorEnabled ? ToAvaloniaColor(currentWordTextColor) : Colors.Transparent;
+            IsCurrentWordTextColorEnabled ? currentWordTextColor : Color.Empty;
 
         IsCurrentWordOutlineColorEnabled =
             IsHighlightForCurrentWordChecked && style is { HasOutline: true, HasOutlineBox: false };
         CurrentWordOutlineColor =
-            IsCurrentWordTextColorEnabled ? ToAvaloniaColor(currentWordOutlineColor) : Colors.Transparent;
+            IsCurrentWordTextColorEnabled ? currentWordOutlineColor : Color.Empty;
 
         IsCurrentWordShadowColorEnabled = IsHighlightForCurrentWordChecked && style.HasShadow;
         CurrentWordShadowColor =
-            IsCurrentWordTextColorEnabled ? ToAvaloniaColor(currentWordShadowColor) : Colors.Transparent;
+            IsCurrentWordTextColorEnabled ? currentWordShadowColor : Color.Empty;
 
         UpdateStylePreview();
     }
@@ -184,11 +192,11 @@ public partial class MainWindowViewModel : ViewModelBase
         IsCurrentWordOutlineColorEnabled = value && style is { HasOutline: true, HasOutlineBox: false };
         IsCurrentWordShadowColorEnabled = value && style.HasShadow;
 
-        CurrentWordTextColor = IsCurrentWordTextColorEnabled ? ToAvaloniaColor(style.PrimaryColor) : Colors.Transparent;
+        CurrentWordTextColor = IsCurrentWordTextColorEnabled ? style.PrimaryColor : Color.Empty;
         CurrentWordOutlineColor =
-            IsCurrentWordOutlineColorEnabled ? ToAvaloniaColor(style.OutlineColor) : Colors.Transparent;
+            IsCurrentWordOutlineColorEnabled ? style.OutlineColor : Color.Empty;
         CurrentWordShadowColor =
-            IsCurrentWordShadowColorEnabled ? ToAvaloniaColor(style.ShadowColor) : Colors.Transparent;
+            IsCurrentWordShadowColorEnabled ? style.ShadowColor : Color.Empty;
 
         UpdateStylePreview();
     }
@@ -196,16 +204,16 @@ public partial class MainWindowViewModel : ViewModelBase
     partial void OnCurrentWordTextColorChanged(Color value)
     {
         SelectedItem?.CurrentWordTextColor = IsHighlightForCurrentWordChecked
-            ? ToSystemDrawingColor(value)
-            : System.Drawing.Color.Empty;
+            ? value
+            : Color.Empty;
         UpdateStylePreview();
     }
 
     partial void OnCurrentWordOutlineColorChanged(Color value)
     {
         SelectedItem?.CurrentWordOutlineColor = IsHighlightForCurrentWordChecked
-            ? ToSystemDrawingColor(value)
-            : System.Drawing.Color.Empty;
+            ? value
+            : Color.Empty;
 
         UpdateStylePreview();
     }
@@ -213,12 +221,12 @@ public partial class MainWindowViewModel : ViewModelBase
     partial void OnCurrentWordShadowColorChanged(Color value)
     {
         SelectedItem?.CurrentWordShadowColor = IsHighlightForCurrentWordChecked
-            ? ToSystemDrawingColor(value)
-            : System.Drawing.Color.Empty;
+            ? value
+            : Color.Empty;
         UpdateStylePreview();
     }
 
-    [RelayCommand]
+    [RelayCommand(CanExecute = nameof(IsStyleOptionsAvailable))]
     private void ToggleStyleOptions(bool? value = null)
     {
         if (value is null)
@@ -233,7 +241,7 @@ public partial class MainWindowViewModel : ViewModelBase
         }
     }
 
-    [RelayCommand]
+    [RelayCommand(CanExecute = nameof(IsConvertAvailable))]
     private async Task Convert()
     {
         try
@@ -286,14 +294,15 @@ public partial class MainWindowViewModel : ViewModelBase
             var outputFilePath = Path.ChangeExtension(InputFilePath, outputExtension);
             outputDoc.Save(outputFilePath);
 
-            ConvertedTextMessage = "Successfully converted: " + Path.GetFileName(outputFilePath);
+            ConvertedTextMessage = string.Format(Resources.SuccessfullyCreated0, Path.GetFileName(outputFilePath));
             ConvertTextVisibility = true;
             await Task.Delay(4000);
             ConvertTextVisibility = false;
         }
         catch (Exception e)
         {
-            await ShowErrorMessage(e);
+            await ShowErrorMessage(e.Message);
+            ToggleStyleOptions(false);
         }
     }
 
@@ -325,13 +334,20 @@ public partial class MainWindowViewModel : ViewModelBase
         LoadFile(selectedFilePath);
     }
 
-    [RelayCommand]
-    private void ToggleAutoConvert()
+    [RelayCommand(CanExecute = nameof(IsAutoConvertAvailable))]
+    private void AutoConvertButtonPressed()
     {
         _subtitleModifyWatcher.EnableRaisingEvents = IsAutoConvertActive;
         _subtitleRenameWatcher.EnableRaisingEvents = IsAutoConvertActive;
         if (IsAutoConvertActive)
             _ = Convert();
+    }
+
+    [RelayCommand(CanExecute = nameof(IsAutoConvertAvailable))]
+    private void ToggleAutoConvertButton()
+    {
+        IsAutoConvertActive = !IsAutoConvertActive;
+        AutoConvertButtonPressed();
     }
 
     [RelayCommand]
@@ -360,8 +376,9 @@ public partial class MainWindowViewModel : ViewModelBase
         }
         catch (Exception e)
         {
-            _ = ShowErrorMessage(e);
+            _ = ShowErrorMessage(string.Format(Resources.FailedToLoadFile0, e.Message));
             ClearUi();
+            ToggleStyleOptions(false);
         }
     }
 
@@ -392,7 +409,7 @@ public partial class MainWindowViewModel : ViewModelBase
         _subtitleRenameWatcher.EnableRaisingEvents = false;
         _subtitleRenameWatcher.Path = Path.GetDirectoryName(filePath) ??
                                       throw new DirectoryNotFoundException(
-                                          "Could not get directory name from file path. Wait, how did the last one pass and this one fail?");
+                                          "Could not get directory name from file path");
         _subtitleRenameWatcher.Filter =
             Path.GetFileNameWithoutExtension(filePath) + "_tmp_*" + Path.GetExtension(filePath);
 
@@ -442,26 +459,17 @@ public partial class MainWindowViewModel : ViewModelBase
         var style = _styles[SelectedItem.Name];
         var html = HtmlStylePreviewGenerator.Generate(style, SelectedItem, _defaultStyle, 1);
 
-        PreviewHtml = "data:text/html;base64," + System.Convert.ToBase64String(Encoding.UTF8.GetBytes(html));
+        PreviewHtml = "data:text/html;charset=utf-8;base64," +
+                      System.Convert.ToBase64String(Encoding.UTF8.GetBytes(html));
     }
 
-    private static Color ToAvaloniaColor(System.Drawing.Color color)
+    private static async Task ShowErrorMessage(string e)
     {
-        return Color.FromArgb(color.A, color.R, color.G, color.B);
-    }
-
-    private static System.Drawing.Color ToSystemDrawingColor(Color color)
-    {
-        return System.Drawing.Color.FromArgb(color.A, color.R, color.G, color.B);
-    }
-
-    private static async Task ShowErrorMessage(Exception e)
-    {
-        var box = MessageBoxManager.GetMessageBoxStandard(new MessageBoxStandardParams()
+        var box = MessageBoxManager.GetMessageBoxStandard(new MessageBoxStandardParams
         {
-            ContentTitle = "Error",
-            ContentMessage = e.Message,
-            Icon = Icon.Error,
+            ContentTitle = Resources.Error,
+            ContentMessage = e,
+            Icon = Icon.Error
         });
         await box.ShowAsync();
     }

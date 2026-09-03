@@ -37,7 +37,5 @@ The only main feature differences beyond the UI can be found in the color picker
 
 Got time and want to commit? Here's things that could be done:
 
-- Implement UI localization using the ResX files in YTSubConverter.Shared
-- Implement an ITextMeasurer for Avalonia to give feedback for failed command line conversions
-- Get a screenshot of the application running on ARM and x86 macOS and add it to the README
+- Get a screenshot of the application running on ARM and x64 macOS and add it to the README
 - If you see any code that you can improve, feel free to do so

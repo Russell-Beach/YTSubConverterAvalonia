@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Platform.Storage;
+using YTSubConverter.Shared;
 
 namespace YTSubConverterAvalonia.Services;
 
@@ -9,15 +10,17 @@ public sealed class AvaloniaFileDialogService(Window ownerWindow) : IFileDialogS
 {
     public async Task<string?> PickSingleFileAsync()
     {
+        var translatedFilePickerNames = Resources.SubtitleFileFilter.Split('|').Select(x => x.Trim()).ToArray();
+
         var files = await ownerWindow.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
         {
             Title = "Select Subtitle File",
             AllowMultiple = false,
             FileTypeFilter =
             [
-                new FilePickerFileType("Advanced Substation Alpha files") { Patterns = ["*.ass"] },
-                new FilePickerFileType("YouTube subtitles") { Patterns = ["*.sbv", "*.ytt", "*.srv3"] },
-                new FilePickerFileType("Timed Text Markup Language") { Patterns = ["*.ttml", "*.xml", "*.dfxp"] }
+                new FilePickerFileType(translatedFilePickerNames[0]) { Patterns = ["*.ass"] },
+                new FilePickerFileType(translatedFilePickerNames[2]) { Patterns = ["*.sbv", "*.ytt", "*.srv3"] },
+                new FilePickerFileType(translatedFilePickerNames[4]) { Patterns = ["*.ttml", "*.xml", "*.dfxp"] }
             ]
         });
 

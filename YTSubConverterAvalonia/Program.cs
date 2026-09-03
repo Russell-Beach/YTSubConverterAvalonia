@@ -1,11 +1,16 @@
 ﻿using System;
+using System.Runtime.InteropServices;
 using Avalonia;
 using YTSubConverter.Shared;
+using YTSubConverterAvalonia.Services;
+using OperatingSystem = System.OperatingSystem;
 
 namespace YTSubConverterAvalonia;
 
 internal sealed class Program
 {
+    private const int AttachParentProcess = -1;
+
     // Initialization code. Don't use any Avalonia, third-party APIs or any
     // SynchronizationContext-reliant code before AppMain is called: things aren't initialized
     // yet and stuff might break.
@@ -14,11 +19,13 @@ internal sealed class Program
     {
         if (args.Length > 0)
         {
-            // TODO: AvaloniaTextMeasurer to give CommandLineHandler output to console for failed conversions
-            CommandLineHandler.Handle(args);
+            if (OperatingSystem.IsWindows()) AttachConsole(AttachParentProcess);
+            using AvaloniaTextMeasurer textMeasurer = new();
+            CommandLineHandler.Handle(args, textMeasurer);
+
             return;
         }
-        
+
         BuildAvaloniaApp()
             .StartWithClassicDesktopLifetime(args);
     }
@@ -31,4 +38,7 @@ internal sealed class Program
             .WithInterFont()
             .LogToTrace();
     }
+
+    [DllImport("kernel32.dll")]
+    private static extern bool AttachConsole(int dwProcessId);
 }

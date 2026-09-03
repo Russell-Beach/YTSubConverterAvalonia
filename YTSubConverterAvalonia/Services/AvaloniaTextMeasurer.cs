@@ -7,13 +7,13 @@ namespace YTSubConverterAvalonia.Services;
 
 internal class AvaloniaTextMeasurer : ITextMeasurer
 {
-    private TextLayout? _lastLayout;
-    private string? _lastText;
-    private string? _lastFont;
-    private float _lastSize;
     private bool _lastBold;
+    private string? _lastFont;
     private bool _lastItalic;
-    
+    private TextLayout? _lastLayout;
+    private float _lastSize;
+    private string? _lastText;
+
     public void Dispose()
     {
         _lastLayout = null;

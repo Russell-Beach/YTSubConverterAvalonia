@@ -33,7 +33,7 @@
         <KeyBinding Gesture="Ctrl+O" Command="{Binding LoadSubtitleButtonCommand}" />
         <KeyBinding Gesture="Ctrl+A" Command="{Binding ToggleAutoConvertButtonCommand}" />
     </Window.KeyBindings>
-    
+
     <Design.DataContext>
         <!-- This only sets the DataContext for the previewer in an IDE, to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
         <vm:MainWindowViewModel />
@@ -53,8 +53,7 @@
                 <ToggleButton
                     Content="{x:Static res:Resources.StyleOptions}"
                     HorizontalAlignment="Left"
-                    Command="{Binding ToggleStyleOptionsCommand}"
-                    />
+                    Command="{Binding ToggleStyleOptionsCommand}" />
             </GroupBox.Header>
 
             <Grid
@@ -72,14 +71,17 @@
                                       IsChecked="{Binding IsGlowChecked}" />
                             <CheckBox Content="{x:Static res:Resources.Bevel}" IsEnabled="{Binding IsShadowsEnabled}"
                                       IsChecked="{Binding IsBevelChecked}" />
-                            <CheckBox Content="{x:Static res:Resources.SoftShadow}" IsEnabled="{Binding IsShadowsEnabled}"
+                            <CheckBox Content="{x:Static res:Resources.SoftShadow}"
+                                      IsEnabled="{Binding IsShadowsEnabled}"
                                       IsChecked="{Binding IsSoftShadowChecked}" />
-                            <CheckBox Content="{x:Static res:Resources.HardShadow}" IsEnabled="{Binding IsShadowsEnabled}"
+                            <CheckBox Content="{x:Static res:Resources.HardShadow}"
+                                      IsEnabled="{Binding IsShadowsEnabled}"
                                       IsChecked="{Binding IsHardShadowChecked}" />
                         </StackPanel>
 
                         <StackPanel Grid.Column="1" Spacing="8">
-                            <CheckBox Content="{x:Static res:Resources.UseForKaraoke}" IsChecked="{Binding IsUseForKaraokeChecked}" />
+                            <CheckBox Content="{x:Static res:Resources.UseForKaraoke}"
+                                      IsChecked="{Binding IsUseForKaraokeChecked}" />
                             <CheckBox Content="{x:Static res:Resources.HighlightCurrentWord}"
                                       IsChecked="{Binding IsHighlightForCurrentWordChecked}"
                                       IsEnabled="{Binding IsUseForKaraokeChecked}" />
@@ -88,28 +90,34 @@
                                   RowSpacing="4" IsEnabled="{Binding IsHighlightForCurrentWordChecked}">
 
                                 <!-- Avalonia devs if you read this, please add a hexadecimal mask character (and a 0-5 mask character and insert mode overrides) -->
-                                <TextBlock Grid.Row="0" Grid.Column="0" Text="{x:Static res:Resources.KaraokeTextColor}" VerticalAlignment="Center" />
+                                <TextBlock Grid.Row="0" Grid.Column="0"
+                                           Text="{x:Static res:Resources.KaraokeTextColor}" VerticalAlignment="Center" />
                                 <MaskedTextBox Grid.Row="0" Grid.Column="1" VerticalContentAlignment="Center"
-                                        Mask="\#AAAAAA" PromptChar="0"
-                                         IsEnabled="{Binding IsCurrentWordTextColorEnabled}"
-                                         Text="{Binding CurrentWordTextColor, Converter={StaticResource ColorToStringConverter}}" />
+                                               Mask="\#AAAAAA" PromptChar="0"
+                                               IsEnabled="{Binding IsCurrentWordTextColorEnabled}"
+                                               Text="{Binding CurrentWordTextColor, Converter={StaticResource ColorToStringConverter}}" />
                                 <ColorPicker Grid.Row="0" Grid.Column="2" IsAlphaEnabled="False"
                                              Color="{Binding CurrentWordTextColor, Converter={StaticResource AvaloniaToSystemColorConverter}}"
                                              IsEnabled="{Binding IsCurrentWordTextColorEnabled}" />
 
-                                <TextBlock Grid.Row="1" Grid.Column="0" Text="{x:Static res:Resources.KaraokeOutlineColor}"
+                                <TextBlock Grid.Row="1" Grid.Column="0"
+                                           Text="{x:Static res:Resources.KaraokeOutlineColor}"
                                            VerticalAlignment="Center" />
                                 <MaskedTextBox Grid.Row="1" Grid.Column="1" VerticalContentAlignment="Center"
                                                IsEnabled="{Binding IsCurrentWordOutlineColorEnabled}"
-                                               Text="{Binding CurrentWordOutlineColor, Converter={StaticResource ColorToStringConverter}}" Mask="\#AAAAAA" PromptChar="0" />
+                                               Text="{Binding CurrentWordOutlineColor, Converter={StaticResource ColorToStringConverter}}"
+                                               Mask="\#AAAAAA" PromptChar="0" />
                                 <ColorPicker Grid.Row="1" Grid.Column="2" IsAlphaEnabled="False"
                                              Color="{Binding CurrentWordOutlineColor, Converter={StaticResource AvaloniaToSystemColorConverter}}"
                                              IsEnabled="{Binding IsCurrentWordOutlineColorEnabled}" />
 
-                                <TextBlock Grid.Row="2" Grid.Column="0" Text="{x:Static res:Resources.KaraokeShadowColor}" VerticalAlignment="Center" />
+                                <TextBlock Grid.Row="2" Grid.Column="0"
+                                           Text="{x:Static res:Resources.KaraokeShadowColor}"
+                                           VerticalAlignment="Center" />
                                 <MaskedTextBox Grid.Row="2" Grid.Column="1" VerticalContentAlignment="Center"
                                                IsEnabled="{Binding IsCurrentWordShadowColorEnabled}"
-                                               Text="{Binding CurrentWordShadowColor, Converter={StaticResource ColorToStringConverter}}" Mask="\#AAAAAA" PromptChar="0" />
+                                               Text="{Binding CurrentWordShadowColor, Converter={StaticResource ColorToStringConverter}}"
+                                               Mask="\#AAAAAA" PromptChar="0" />
                                 <ColorPicker Grid.Row="2" Grid.Column="2" IsAlphaEnabled="False"
                                              Color="{Binding CurrentWordShadowColor, Converter={StaticResource AvaloniaToSystemColorConverter}}"
                                              IsEnabled="{Binding IsCurrentWordShadowColorEnabled}" />
@@ -132,8 +140,7 @@
                        Text="{Binding ConvertedTextMessage}" />
             <ToggleButton Content="{x:Static res:Resources.Autoconvert}" IsChecked="{Binding IsAutoConvertActive}"
                           Padding="32, 4"
-                          Command="{Binding AutoConvertButtonPressedCommand}"
-                          />
+                          Command="{Binding AutoConvertButtonPressedCommand}" />
             <Button Content="{x:Static res:Resources.Convert}" Padding="32, 4" Command="{Binding ConvertCommand}" />
         </StackPanel>
     </Grid>

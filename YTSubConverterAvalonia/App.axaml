@@ -15,7 +15,7 @@
         <SimpleTheme />
         <StyleInclude Source="avares://Avalonia.Controls.ColorPicker/Themes/Simple/Simple.xaml" />
     </Application.Styles>
-    
+
     <TrayIcon.Icons>
         <TrayIcons>
             <TrayIcon Icon="/Assets/icon.ico"
@@ -24,10 +24,10 @@
                       Command="{Binding ShowMainWindowCommand}">
                 <TrayIcon.Menu>
                     <NativeMenu>
-                        <NativeMenuItem Header="Auto-converting file:" IsEnabled="False"/>
-                        <NativeMenuItem Header="{Binding InputFilePath}" IsEnabled="False"/>
+                        <NativeMenuItem Header="Auto-converting file:" IsEnabled="False" />
+                        <NativeMenuItem Header="{Binding InputFilePath}" IsEnabled="False" />
                         <NativeMenuItemSeparator />
-                        <NativeMenuItem Header="Exit" Command="{Binding ExitApplicationCommand}"/>
+                        <NativeMenuItem Header="Exit" Command="{Binding ExitApplicationCommand}" />
                     </NativeMenu>
                 </TrayIcon.Menu>
             </TrayIcon>

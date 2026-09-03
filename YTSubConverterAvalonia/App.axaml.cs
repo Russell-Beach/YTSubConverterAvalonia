@@ -1,4 +1,5 @@
 using Avalonia;
+using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 using YTSubConverterAvalonia.Services;
@@ -25,7 +26,7 @@ public class App : Application
         {
             _mainWindow = new MainWindow();
             var viewModel = new MainWindowViewModel(new AvaloniaFileDialogService(_mainWindow));
-            
+
             DataContext = viewModel;
             _mainWindow.DataContext = viewModel;
 
@@ -43,7 +44,7 @@ public class App : Application
         if (_mainWindow is null) return;
 
         _mainWindow.Show();
-        _mainWindow.WindowState = Avalonia.Controls.WindowState.Normal;
+        _mainWindow.WindowState = WindowState.Normal;
         _mainWindow.Activate();
     }
 }

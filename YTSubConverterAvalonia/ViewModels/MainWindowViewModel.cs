@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Avalonia.Media;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
@@ -32,11 +32,6 @@ public partial class MainWindowViewModel : ViewModelBase
     private DateTime _lastAutoConvertTime = DateTime.MinValue;
     private Dictionary<string, AssStyle> _styles = new();
 
-    public Action? RequestShowMainWindow { private get; set; }
-    public Action? RequestExitApplication { private get; set; }
-
-    public bool IsExitRequested { get; private set; }
-
     public MainWindowViewModel(IFileDialogService fileDialogService)
     {
         _fileService = fileDialogService;
@@ -56,12 +51,27 @@ public partial class MainWindowViewModel : ViewModelBase
         // Constructor for use in the IDE previewer since it doesn't have a file dialog service
         ToggleStyleOptions(true);
     }
-    
+
+    public Action? RequestShowMainWindow { private get; set; }
+    public Action? RequestExitApplication { private get; set; }
+
+    public bool IsExitRequested { get; private set; }
+
     [ObservableProperty] public partial ObservableCollection<AssStyleOptions> DataSource { get; set; } = [];
     [ObservableProperty] public partial bool IsStyleOptionsVisible { get; set; } = false;
-    [ObservableProperty] [NotifyCanExecuteChangedFor(nameof(ConvertCommand))] public partial bool IsConvertAvailable { get; set; } = false;
-    [ObservableProperty] [NotifyCanExecuteChangedFor(nameof(AutoConvertButtonPressedCommand), nameof(ToggleAutoConvertButtonCommand))] public partial bool IsAutoConvertAvailable { get; set; } = false;
-    [ObservableProperty] [NotifyCanExecuteChangedFor(nameof(ToggleStyleOptionsCommand))] public partial bool IsStyleOptionsAvailable { get; set; } = false;
+
+    [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(ConvertCommand))]
+    public partial bool IsConvertAvailable { get; set; } = false;
+
+    [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(AutoConvertButtonPressedCommand), nameof(ToggleAutoConvertButtonCommand))]
+    public partial bool IsAutoConvertAvailable { get; set; } = false;
+
+    [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(ToggleStyleOptionsCommand))]
+    public partial bool IsStyleOptionsAvailable { get; set; } = false;
+
     [ObservableProperty] public partial bool IsAutoConvertActive { get; set; } = false;
     [ObservableProperty] public partial bool ConvertTextVisibility { get; set; } = false;
     [ObservableProperty] public partial string ConvertedTextMessage { get; set; } = "";
@@ -76,11 +86,11 @@ public partial class MainWindowViewModel : ViewModelBase
     [ObservableProperty] public partial bool IsHardShadowChecked { get; set; } = false;
     [ObservableProperty] public partial bool IsUseForKaraokeChecked { get; set; } = false;
     [ObservableProperty] public partial bool IsHighlightForCurrentWordChecked { get; set; } = false;
-    [ObservableProperty] public partial System.Drawing.Color CurrentWordTextColor { get; set; }
+    [ObservableProperty] public partial Color CurrentWordTextColor { get; set; }
     [ObservableProperty] public partial bool IsCurrentWordTextColorEnabled { get; set; } = false;
-    [ObservableProperty] public partial System.Drawing.Color CurrentWordOutlineColor { get; set; }
+    [ObservableProperty] public partial Color CurrentWordOutlineColor { get; set; }
     [ObservableProperty] public partial bool IsCurrentWordOutlineColorEnabled { get; set; } = false;
-    [ObservableProperty] public partial System.Drawing.Color CurrentWordShadowColor { get; set; }
+    [ObservableProperty] public partial Color CurrentWordShadowColor { get; set; }
     [ObservableProperty] public partial bool IsCurrentWordShadowColorEnabled { get; set; } = false;
     [ObservableProperty] public partial string PreviewHtml { get; set; } = "";
     [ObservableProperty] public partial bool IsWindowHiddenToTray { get; set; } = false;
@@ -97,8 +107,6 @@ public partial class MainWindowViewModel : ViewModelBase
         OnPropertyChanged(nameof(IsTrayIconVisible));
     }
 
-    // This sometimes says it's not being used and IDK why that happens. Some communityMVVM toolkit code shenanigans
-    // ReSharper disable once UnusedMember.Local
     partial void OnSelectedItemChanged(AssStyleOptions? value)
     {
         if (value is null) return;
@@ -129,16 +137,16 @@ public partial class MainWindowViewModel : ViewModelBase
 
         IsCurrentWordTextColorEnabled = IsHighlightForCurrentWordChecked;
         CurrentWordTextColor =
-            IsCurrentWordTextColorEnabled ? currentWordTextColor : System.Drawing.Color.Empty;
+            IsCurrentWordTextColorEnabled ? currentWordTextColor : Color.Empty;
 
         IsCurrentWordOutlineColorEnabled =
             IsHighlightForCurrentWordChecked && style is { HasOutline: true, HasOutlineBox: false };
         CurrentWordOutlineColor =
-            IsCurrentWordTextColorEnabled ? currentWordOutlineColor : System.Drawing.Color.Empty;
+            IsCurrentWordTextColorEnabled ? currentWordOutlineColor : Color.Empty;
 
         IsCurrentWordShadowColorEnabled = IsHighlightForCurrentWordChecked && style.HasShadow;
         CurrentWordShadowColor =
-            IsCurrentWordTextColorEnabled ? currentWordShadowColor : System.Drawing.Color.Empty;
+            IsCurrentWordTextColorEnabled ? currentWordShadowColor : Color.Empty;
 
         UpdateStylePreview();
     }
@@ -184,37 +192,37 @@ public partial class MainWindowViewModel : ViewModelBase
         IsCurrentWordOutlineColorEnabled = value && style is { HasOutline: true, HasOutlineBox: false };
         IsCurrentWordShadowColorEnabled = value && style.HasShadow;
 
-        CurrentWordTextColor = IsCurrentWordTextColorEnabled ? style.PrimaryColor : System.Drawing.Color.Empty;
+        CurrentWordTextColor = IsCurrentWordTextColorEnabled ? style.PrimaryColor : Color.Empty;
         CurrentWordOutlineColor =
-            IsCurrentWordOutlineColorEnabled ? style.OutlineColor : System.Drawing.Color.Empty;
+            IsCurrentWordOutlineColorEnabled ? style.OutlineColor : Color.Empty;
         CurrentWordShadowColor =
-            IsCurrentWordShadowColorEnabled ? style.ShadowColor : System.Drawing.Color.Empty;
+            IsCurrentWordShadowColorEnabled ? style.ShadowColor : Color.Empty;
 
         UpdateStylePreview();
     }
 
-    partial void OnCurrentWordTextColorChanged(System.Drawing.Color value)
+    partial void OnCurrentWordTextColorChanged(Color value)
     {
         SelectedItem?.CurrentWordTextColor = IsHighlightForCurrentWordChecked
             ? value
-            : System.Drawing.Color.Empty;
+            : Color.Empty;
         UpdateStylePreview();
     }
 
-    partial void OnCurrentWordOutlineColorChanged(System.Drawing.Color value)
+    partial void OnCurrentWordOutlineColorChanged(Color value)
     {
         SelectedItem?.CurrentWordOutlineColor = IsHighlightForCurrentWordChecked
             ? value
-            : System.Drawing.Color.Empty;
+            : Color.Empty;
 
         UpdateStylePreview();
     }
 
-    partial void OnCurrentWordShadowColorChanged(System.Drawing.Color value)
+    partial void OnCurrentWordShadowColorChanged(Color value)
     {
         SelectedItem?.CurrentWordShadowColor = IsHighlightForCurrentWordChecked
             ? value
-            : System.Drawing.Color.Empty;
+            : Color.Empty;
         UpdateStylePreview();
     }
 
@@ -334,7 +342,7 @@ public partial class MainWindowViewModel : ViewModelBase
         if (IsAutoConvertActive)
             _ = Convert();
     }
-    
+
     [RelayCommand(CanExecute = nameof(IsAutoConvertAvailable))]
     private void ToggleAutoConvertButton()
     {
@@ -451,15 +459,17 @@ public partial class MainWindowViewModel : ViewModelBase
         var style = _styles[SelectedItem.Name];
         var html = HtmlStylePreviewGenerator.Generate(style, SelectedItem, _defaultStyle, 1);
 
-        PreviewHtml = "data:text/html;charset=utf-8;base64," + System.Convert.ToBase64String(Encoding.UTF8.GetBytes(html));
+        PreviewHtml = "data:text/html;charset=utf-8;base64," +
+                      System.Convert.ToBase64String(Encoding.UTF8.GetBytes(html));
     }
+
     private static async Task ShowErrorMessage(string e)
     {
-        var box = MessageBoxManager.GetMessageBoxStandard(new MessageBoxStandardParams()
+        var box = MessageBoxManager.GetMessageBoxStandard(new MessageBoxStandardParams
         {
             ContentTitle = Resources.Error,
             ContentMessage = e,
-            Icon = Icon.Error,
+            Icon = Icon.Error
         });
         await box.ShowAsync();
     }

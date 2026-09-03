@@ -27,6 +27,12 @@
         </ResourceDictionary>
     </Window.Resources>
 
+    <Window.KeyBindings>
+        <KeyBinding Gesture="Ctrl+S" Command="{Binding ConvertCommand}" />
+        <KeyBinding Gesture="Ctrl+O" Command="{Binding LoadSubtitleButtonCommand}" />
+        <KeyBinding Gesture="Ctrl+A" Command="{Binding ToggleAutoConvertButtonCommand}" />
+    </Window.KeyBindings>
+    
     <Design.DataContext>
         <!-- This only sets the DataContext for the previewer in an IDE, to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
         <vm:MainWindowViewModel />
@@ -47,7 +53,7 @@
                     Content="{x:Static res:Resources.StyleOptions}"
                     HorizontalAlignment="Left"
                     Command="{Binding ToggleStyleOptionsCommand}"
-                    IsEnabled="{Binding IsStyleOptionsAvailable}" />
+                    />
             </GroupBox.Header>
 
             <Grid
@@ -123,10 +129,9 @@
                        Text="{Binding ConvertedTextMessage}" />
             <ToggleButton Content="{x:Static res:Resources.Autoconvert}" IsChecked="{Binding IsAutoConvertActive}"
                           Padding="32, 4"
-                          IsEnabled="{Binding IsAutoConvertAvailable}"
-                          Command="{Binding ToggleAutoConvertCommand}"
+                          Command="{Binding AutoConvertButtonPressedCommand}"
                           />
-            <Button Content="{x:Static res:Resources.Convert}" Padding="32, 4" IsEnabled="{Binding IsConvertAvailable}" Command="{Binding ConvertCommand}" />
+            <Button Content="{x:Static res:Resources.Convert}" Padding="32, 4" Command="{Binding ConvertCommand}" />
         </StackPanel>
     </Grid>
 </Window>

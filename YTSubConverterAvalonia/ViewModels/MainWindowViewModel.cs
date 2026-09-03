@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -60,9 +59,9 @@ public partial class MainWindowViewModel : ViewModelBase
     
     [ObservableProperty] public partial ObservableCollection<AssStyleOptions> DataSource { get; set; } = [];
     [ObservableProperty] public partial bool IsStyleOptionsVisible { get; set; } = false;
-    [ObservableProperty] public partial bool IsConvertAvailable { get; set; } = false;
-    [ObservableProperty] public partial bool IsAutoConvertAvailable { get; set; } = false;
-    [ObservableProperty] public partial bool IsStyleOptionsAvailable { get; set; } = false;
+    [ObservableProperty] [NotifyCanExecuteChangedFor(nameof(ConvertCommand))] public partial bool IsConvertAvailable { get; set; } = false;
+    [ObservableProperty] [NotifyCanExecuteChangedFor(nameof(AutoConvertButtonPressedCommand), nameof(ToggleAutoConvertButtonCommand))] public partial bool IsAutoConvertAvailable { get; set; } = false;
+    [ObservableProperty] [NotifyCanExecuteChangedFor(nameof(ToggleStyleOptionsCommand))] public partial bool IsStyleOptionsAvailable { get; set; } = false;
     [ObservableProperty] public partial bool IsAutoConvertActive { get; set; } = false;
     [ObservableProperty] public partial bool ConvertTextVisibility { get; set; } = false;
     [ObservableProperty] public partial string ConvertedTextMessage { get; set; } = "";
@@ -219,7 +218,7 @@ public partial class MainWindowViewModel : ViewModelBase
         UpdateStylePreview();
     }
 
-    [RelayCommand]
+    [RelayCommand(CanExecute = nameof(IsStyleOptionsAvailable))]
     private void ToggleStyleOptions(bool? value = null)
     {
         if (value is null)
@@ -234,7 +233,7 @@ public partial class MainWindowViewModel : ViewModelBase
         }
     }
 
-    [RelayCommand]
+    [RelayCommand(CanExecute = nameof(IsConvertAvailable))]
     private async Task Convert()
     {
         try
@@ -295,6 +294,7 @@ public partial class MainWindowViewModel : ViewModelBase
         catch (Exception e)
         {
             await ShowErrorMessage(e.Message);
+            ToggleStyleOptions(false);
         }
     }
 
@@ -326,13 +326,20 @@ public partial class MainWindowViewModel : ViewModelBase
         LoadFile(selectedFilePath);
     }
 
-    [RelayCommand]
-    private void ToggleAutoConvert()
+    [RelayCommand(CanExecute = nameof(IsAutoConvertAvailable))]
+    private void AutoConvertButtonPressed()
     {
         _subtitleModifyWatcher.EnableRaisingEvents = IsAutoConvertActive;
         _subtitleRenameWatcher.EnableRaisingEvents = IsAutoConvertActive;
         if (IsAutoConvertActive)
             _ = Convert();
+    }
+    
+    [RelayCommand(CanExecute = nameof(IsAutoConvertAvailable))]
+    private void ToggleAutoConvertButton()
+    {
+        IsAutoConvertActive = !IsAutoConvertActive;
+        AutoConvertButtonPressed();
     }
 
     [RelayCommand]
@@ -363,6 +370,7 @@ public partial class MainWindowViewModel : ViewModelBase
         {
             _ = ShowErrorMessage(string.Format(Resources.FailedToLoadFile0, e.Message));
             ClearUi();
+            ToggleStyleOptions(false);
         }
     }
 

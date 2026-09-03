@@ -3,7 +3,7 @@
         xmlns:vm="using:YTSubConverterAvalonia.ViewModels"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:converters="clr-namespace:Avalonia.Controls.Converters;assembly=Avalonia.Controls.ColorPicker"
+        xmlns:colorConverter="clr-namespace:YTSubConverterAvalonia.Converters"
         xmlns:res="clr-namespace:YTSubConverter.Shared;assembly=YTSubConverter.Shared"
         mc:Ignorable="d" d:DesignWidth="725" d:DesignHeight="500"
         Width="725" Height="125" CanResize="False" CanMaximize="False"
@@ -14,7 +14,8 @@
         Background="{DynamicResource BackgroundColor}">
     <Window.Resources>
         <ResourceDictionary>
-            <converters:ColorToHexConverter x:Key="ColorToHexConverter" IsAlphaVisible="False" />
+            <colorConverter:AvaloniaToSystemColorConverter x:Key="AvaloniaToSystemColorConverter" />
+            <colorConverter:ColorToStringConverter x:Key="ColorToStringConverter" />
             <ResourceDictionary.ThemeDictionaries>
                 <ResourceDictionary x:Key="Light">
                     <Color x:Key="BackgroundColor">White</Color>
@@ -86,29 +87,31 @@
                             <Grid ColumnDefinitions="Auto, 80 ,Auto" RowDefinitions="Auto, Auto,Auto" ColumnSpacing="6"
                                   RowSpacing="4" IsEnabled="{Binding IsHighlightForCurrentWordChecked}">
 
+                                <!-- Avalonia devs if you read this, please add a hexadecimal mask character (and a 0-5 mask character and insert mode overrides) -->
                                 <TextBlock Grid.Row="0" Grid.Column="0" Text="{x:Static res:Resources.KaraokeTextColor}" VerticalAlignment="Center" />
-                                <TextBox Grid.Row="0" Grid.Column="1" VerticalContentAlignment="Center"
+                                <MaskedTextBox Grid.Row="0" Grid.Column="1" VerticalContentAlignment="Center"
+                                        Mask="\#AAAAAA" PromptChar="0"
                                          IsEnabled="{Binding IsCurrentWordTextColorEnabled}"
-                                         Text="{Binding CurrentWordTextColor, Converter={StaticResource ColorToHexConverter}}" />
+                                         Text="{Binding CurrentWordTextColor, Converter={StaticResource ColorToStringConverter}}" />
                                 <ColorPicker Grid.Row="0" Grid.Column="2" IsAlphaEnabled="False"
-                                             Color="{Binding CurrentWordTextColor}"
+                                             Color="{Binding CurrentWordTextColor, Converter={StaticResource AvaloniaToSystemColorConverter}}"
                                              IsEnabled="{Binding IsCurrentWordTextColorEnabled}" />
 
                                 <TextBlock Grid.Row="1" Grid.Column="0" Text="{x:Static res:Resources.KaraokeOutlineColor}"
                                            VerticalAlignment="Center" />
-                                <TextBox Grid.Row="1" Grid.Column="1" VerticalContentAlignment="Center"
-                                         IsEnabled="{Binding IsCurrentWordOutlineColorEnabled}"
-                                         Text="{Binding CurrentWordOutlineColor, Converter={StaticResource ColorToHexConverter}}" />
+                                <MaskedTextBox Grid.Row="1" Grid.Column="1" VerticalContentAlignment="Center"
+                                               IsEnabled="{Binding IsCurrentWordOutlineColorEnabled}"
+                                               Text="{Binding CurrentWordOutlineColor, Converter={StaticResource ColorToStringConverter}}" Mask="\#AAAAAA" PromptChar="0" />
                                 <ColorPicker Grid.Row="1" Grid.Column="2" IsAlphaEnabled="False"
-                                             Color="{Binding CurrentWordOutlineColor}"
+                                             Color="{Binding CurrentWordOutlineColor, Converter={StaticResource AvaloniaToSystemColorConverter}}"
                                              IsEnabled="{Binding IsCurrentWordOutlineColorEnabled}" />
 
                                 <TextBlock Grid.Row="2" Grid.Column="0" Text="{x:Static res:Resources.KaraokeShadowColor}" VerticalAlignment="Center" />
-                                <TextBox Grid.Row="2" Grid.Column="1" VerticalContentAlignment="Center"
-                                         IsEnabled="{Binding IsCurrentWordShadowColorEnabled}"
-                                         Text="{Binding CurrentWordShadowColor, Converter={StaticResource ColorToHexConverter}}" />
+                                <MaskedTextBox Grid.Row="2" Grid.Column="1" VerticalContentAlignment="Center"
+                                               IsEnabled="{Binding IsCurrentWordShadowColorEnabled}"
+                                               Text="{Binding CurrentWordShadowColor, Converter={StaticResource ColorToStringConverter}}" Mask="\#AAAAAA" PromptChar="0" />
                                 <ColorPicker Grid.Row="2" Grid.Column="2" IsAlphaEnabled="False"
-                                             Color="{Binding CurrentWordShadowColor}"
+                                             Color="{Binding CurrentWordShadowColor, Converter={StaticResource AvaloniaToSystemColorConverter}}"
                                              IsEnabled="{Binding IsCurrentWordShadowColorEnabled}" />
                             </Grid>
                         </StackPanel>

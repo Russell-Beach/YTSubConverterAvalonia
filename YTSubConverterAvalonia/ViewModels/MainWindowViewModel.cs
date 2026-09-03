@@ -76,11 +76,11 @@ public partial class MainWindowViewModel : ViewModelBase
     [ObservableProperty] public partial bool IsHardShadowChecked { get; set; } = false;
     [ObservableProperty] public partial bool IsUseForKaraokeChecked { get; set; } = false;
     [ObservableProperty] public partial bool IsHighlightForCurrentWordChecked { get; set; } = false;
-    [ObservableProperty] public partial Color CurrentWordTextColor { get; set; }
+    [ObservableProperty] public partial System.Drawing.Color CurrentWordTextColor { get; set; }
     [ObservableProperty] public partial bool IsCurrentWordTextColorEnabled { get; set; } = false;
-    [ObservableProperty] public partial Color CurrentWordOutlineColor { get; set; }
+    [ObservableProperty] public partial System.Drawing.Color CurrentWordOutlineColor { get; set; }
     [ObservableProperty] public partial bool IsCurrentWordOutlineColorEnabled { get; set; } = false;
-    [ObservableProperty] public partial Color CurrentWordShadowColor { get; set; }
+    [ObservableProperty] public partial System.Drawing.Color CurrentWordShadowColor { get; set; }
     [ObservableProperty] public partial bool IsCurrentWordShadowColorEnabled { get; set; } = false;
     [ObservableProperty] public partial string PreviewHtml { get; set; } = "";
     [ObservableProperty] public partial bool IsWindowHiddenToTray { get; set; } = false;
@@ -129,16 +129,16 @@ public partial class MainWindowViewModel : ViewModelBase
 
         IsCurrentWordTextColorEnabled = IsHighlightForCurrentWordChecked;
         CurrentWordTextColor =
-            IsCurrentWordTextColorEnabled ? ToAvaloniaColor(currentWordTextColor) : Colors.Transparent;
+            IsCurrentWordTextColorEnabled ? currentWordTextColor : System.Drawing.Color.Empty;
 
         IsCurrentWordOutlineColorEnabled =
             IsHighlightForCurrentWordChecked && style is { HasOutline: true, HasOutlineBox: false };
         CurrentWordOutlineColor =
-            IsCurrentWordTextColorEnabled ? ToAvaloniaColor(currentWordOutlineColor) : Colors.Transparent;
+            IsCurrentWordTextColorEnabled ? currentWordOutlineColor : System.Drawing.Color.Empty;
 
         IsCurrentWordShadowColorEnabled = IsHighlightForCurrentWordChecked && style.HasShadow;
         CurrentWordShadowColor =
-            IsCurrentWordTextColorEnabled ? ToAvaloniaColor(currentWordShadowColor) : Colors.Transparent;
+            IsCurrentWordTextColorEnabled ? currentWordShadowColor : System.Drawing.Color.Empty;
 
         UpdateStylePreview();
     }
@@ -184,36 +184,36 @@ public partial class MainWindowViewModel : ViewModelBase
         IsCurrentWordOutlineColorEnabled = value && style is { HasOutline: true, HasOutlineBox: false };
         IsCurrentWordShadowColorEnabled = value && style.HasShadow;
 
-        CurrentWordTextColor = IsCurrentWordTextColorEnabled ? ToAvaloniaColor(style.PrimaryColor) : Colors.Transparent;
+        CurrentWordTextColor = IsCurrentWordTextColorEnabled ? style.PrimaryColor : System.Drawing.Color.Empty;
         CurrentWordOutlineColor =
-            IsCurrentWordOutlineColorEnabled ? ToAvaloniaColor(style.OutlineColor) : Colors.Transparent;
+            IsCurrentWordOutlineColorEnabled ? style.OutlineColor : System.Drawing.Color.Empty;
         CurrentWordShadowColor =
-            IsCurrentWordShadowColorEnabled ? ToAvaloniaColor(style.ShadowColor) : Colors.Transparent;
+            IsCurrentWordShadowColorEnabled ? style.ShadowColor : System.Drawing.Color.Empty;
 
         UpdateStylePreview();
     }
 
-    partial void OnCurrentWordTextColorChanged(Color value)
+    partial void OnCurrentWordTextColorChanged(System.Drawing.Color value)
     {
         SelectedItem?.CurrentWordTextColor = IsHighlightForCurrentWordChecked
-            ? ToSystemDrawingColor(value)
+            ? value
             : System.Drawing.Color.Empty;
         UpdateStylePreview();
     }
 
-    partial void OnCurrentWordOutlineColorChanged(Color value)
+    partial void OnCurrentWordOutlineColorChanged(System.Drawing.Color value)
     {
         SelectedItem?.CurrentWordOutlineColor = IsHighlightForCurrentWordChecked
-            ? ToSystemDrawingColor(value)
+            ? value
             : System.Drawing.Color.Empty;
 
         UpdateStylePreview();
     }
 
-    partial void OnCurrentWordShadowColorChanged(Color value)
+    partial void OnCurrentWordShadowColorChanged(System.Drawing.Color value)
     {
         SelectedItem?.CurrentWordShadowColor = IsHighlightForCurrentWordChecked
-            ? ToSystemDrawingColor(value)
+            ? value
             : System.Drawing.Color.Empty;
         UpdateStylePreview();
     }
@@ -453,17 +453,6 @@ public partial class MainWindowViewModel : ViewModelBase
 
         PreviewHtml = "data:text/html;charset=utf-8;base64," + System.Convert.ToBase64String(Encoding.UTF8.GetBytes(html));
     }
-
-    private static Color ToAvaloniaColor(System.Drawing.Color color)
-    {
-        return Color.FromArgb(color.A, color.R, color.G, color.B);
-    }
-
-    private static System.Drawing.Color ToSystemDrawingColor(Color color)
-    {
-        return System.Drawing.Color.FromArgb(color.A, color.R, color.G, color.B);
-    }
-
     private static async Task ShowErrorMessage(string e)
     {
         var box = MessageBoxManager.GetMessageBoxStandard(new MessageBoxStandardParams()

@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Avalonia.Platform.Storage;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
@@ -31,6 +32,7 @@ public partial class MainWindowViewModel : ViewModelBase
     private AssStyle? _defaultStyle;
     private DateTime _lastAutoConvertTime = DateTime.MinValue;
     private Dictionary<string, AssStyle> _styles = new();
+    private bool isBackgroundSet = false;
 
     public MainWindowViewModel(IFileDialogService fileDialogService)
     {
@@ -75,6 +77,11 @@ public partial class MainWindowViewModel : ViewModelBase
     [ObservableProperty] public partial bool IsAutoConvertActive { get; set; } = false;
     [ObservableProperty] public partial bool ConvertTextVisibility { get; set; } = false;
     [ObservableProperty] public partial string ConvertedTextMessage { get; set; } = "";
+    [ObservableProperty] public partial string BackgroundImageButtonText { get; set; } = "...";
+
+    [ObservableProperty]
+    public partial string BackgroundImageButtonTooltip { get; set; } = Resources.SelectBackgroundImage;
+
     [ObservableProperty] public partial string InputFilePath { get; set; } = "";
     [ObservableProperty] public partial AssStyleOptions? SelectedItem { get; set; } = null;
     [ObservableProperty] public partial int SelectedIndex { get; set; } = -1;
@@ -148,6 +155,7 @@ public partial class MainWindowViewModel : ViewModelBase
         CurrentWordShadowColor =
             IsCurrentWordTextColorEnabled ? currentWordShadowColor : Color.Empty;
 
+        UpdateBackgroundImageButton();
         UpdateStylePreview();
     }
 
@@ -328,7 +336,21 @@ public partial class MainWindowViewModel : ViewModelBase
     [RelayCommand]
     private async Task LoadSubtitleButton()
     {
-        var selectedFilePath = await _fileService.PickSingleFileAsync();
+        var translatedFilePickerNames = Resources.SubtitleFileFilter.Split('|').Select(x => x.Trim()).ToArray();
+        var filter = new List<FilePickerFileType>
+        {
+            new(translatedFilePickerNames[0])
+                { Patterns = ["*.ass"], AppleUniformTypeIdentifiers = ["public.plain-text"] },
+            new(translatedFilePickerNames[2])
+            {
+                Patterns = ["*.sbv", "*.ytt", "*.srv3"],
+                AppleUniformTypeIdentifiers = ["public.plain-text", "public.xml"]
+            },
+            new(translatedFilePickerNames[4])
+                { Patterns = ["*.ttml", "*.xml", "*.dfxp"], AppleUniformTypeIdentifiers = ["public.xml"] }
+        };
+
+        var selectedFilePath = await _fileService.PickSingleFileAsync("Select Subtitle File", filter);
         if (string.IsNullOrWhiteSpace(selectedFilePath)) return;
 
         LoadFile(selectedFilePath);
@@ -363,6 +385,51 @@ public partial class MainWindowViewModel : ViewModelBase
         IsExitRequested = true;
         SaveStylesOnClose();
         RequestExitApplication?.Invoke();
+    }
+
+    [RelayCommand]
+    private async Task SelectBackgroundImage()
+    {
+        var options = SelectedItem!;
+        if (options.HasExistingBackgroundImage)
+        {
+            options.BackgroundImagePath = null;
+            BackgroundImageButtonText = "...";
+            BackgroundImageButtonTooltip = Resources.SelectBackgroundImage;
+        }
+        else
+        {
+            var filter = new List<FilePickerFileType>
+            {
+                new("Images")
+                {
+                    Patterns = ["*.gif", "*.jpg", "*.jpeg", "*.png"],
+                    AppleUniformTypeIdentifiers = ["com.compuserve.gif", "public.jpeg", "public.png"]
+                }
+            };
+
+            var selectedFilePath = await _fileService.PickSingleFileAsync("Open", filter);
+            if (string.IsNullOrWhiteSpace(selectedFilePath)) return;
+
+            options.BackgroundImagePath = selectedFilePath;
+        }
+
+        UpdateBackgroundImageButton();
+        UpdateStylePreview();
+    }
+
+    private void UpdateBackgroundImageButton()
+    {
+        if (SelectedItem?.HasExistingBackgroundImage ?? false)
+        {
+            BackgroundImageButtonText = "X";
+            BackgroundImageButtonTooltip = Resources.ClearBackgroundImage;
+        }
+        else
+        {
+            BackgroundImageButtonText = "...";
+            BackgroundImageButtonTooltip = Resources.SelectBackgroundImage;
+        }
     }
 
     public void LoadFile(string filePath)
@@ -477,7 +544,7 @@ public partial class MainWindowViewModel : ViewModelBase
 
 internal sealed class NoOpFileDialogService : IFileDialogService
 {
-    public Task<string?> PickSingleFileAsync()
+    public Task<string?> PickSingleFileAsync(string title, List<FilePickerFileType> fileTypeFilters)
     {
         return Task.FromResult<string?>(null);
     }

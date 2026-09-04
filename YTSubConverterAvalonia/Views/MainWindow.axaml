@@ -64,7 +64,7 @@
                          SelectedItem="{Binding SelectedItem}" SelectedIndex="{Binding SelectedIndex}" />
 
                 <Grid Grid.Column="1" RowDefinitions="Auto,*" RowSpacing="10">
-                    <Grid ColumnDefinitions="Auto,Auto" ColumnSpacing="34">
+                    <Grid ColumnDefinitions="Auto,Auto, *" ColumnSpacing="34">
                         <StackPanel Spacing="8">
                             <TextBlock Text="{x:Static res:Resources.ShadowTypes}" Margin="0,0,0,2" />
                             <CheckBox Content="{x:Static res:Resources.Glow}" IsEnabled="{Binding IsGlowEnabled}"
@@ -123,6 +123,9 @@
                                              IsEnabled="{Binding IsCurrentWordShadowColorEnabled}" />
                             </Grid>
                         </StackPanel>
+                        <Button Grid.Column="2" Content="{Binding BackgroundImageButtonText}"
+                                ToolTip.Tip="{Binding BackgroundImageButtonTooltip}" VerticalAlignment="Bottom"
+                                Width="28" Command="{Binding SelectBackgroundImageCommand}" />
                     </Grid>
                     <Border Grid.Row="1" BorderBrush="#9E9E9E" BorderThickness="1">
                         <NativeWebView Source="{Binding PreviewHtml}" />
